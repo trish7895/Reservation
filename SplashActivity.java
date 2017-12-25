@@ -35,23 +35,23 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash_layout);
 
-        manager = (TextView)findViewById(R.id.second);
+        manager = findViewById(R.id.second);
         fromBottom = AnimationUtils.loadAnimation(this,R.anim.imageanim);
         manager.setAnimation(fromBottom);
 
-        reservation = (TextView)findViewById(R.id.first);
+        reservation = findViewById(R.id.first);
         fromTop = AnimationUtils.loadAnimation(this,R.anim.imageanim);
         reservation.setAnimation(fromTop);
 
-        res = (ImageView)findViewById(R.id.res);
+        res = findViewById(R.id.res);
         fadeIn = AnimationUtils.loadAnimation(this,R.anim.from_top);
         res.setAnimation(fadeIn);
 
-        r1 = (RelativeLayout) findViewById(R.id.r1);
+        r1 = findViewById(R.id.r1);
         fadeIn = AnimationUtils.loadAnimation(this,R.anim.imageanim);
         r1.setAnimation(fadeIn);
 
-        r2 = (RelativeLayout) findViewById(R.id.r2);
+        r2 = findViewById(R.id.r2);
         fadeIn = AnimationUtils.loadAnimation(this,R.anim.imageanim);
         r2.setAnimation(fadeIn);
 
