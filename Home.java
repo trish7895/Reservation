@@ -134,23 +134,118 @@ public class Home extends AppCompatActivity
                 // Handle the camera action
                 findViewById(R.id.id1).setVisibility(View.GONE);
                 findViewById(R.id.id2).setVisibility(View.VISIBLE);
-            } else
-
-                if (id == R.id.nav_rooms) {
+                findViewById(R.id.id3).setVisibility(View.GONE);
+                findViewById(R.id.id4).setVisibility(View.GONE);
+                findViewById(R.id.id5).setVisibility(View.GONE);
+                findViewById(R.id.id6).setVisibility(View.GONE);
+                findViewById(R.id.id7).setVisibility(View.GONE);
+                findViewById(R.id.id8).setVisibility(View.GONE);
+                findViewById(R.id.id9).setVisibility(View.GONE);
+                findViewById(R.id.id10).setVisibility(View.GONE);
+                findViewById(R.id.id11).setVisibility(View.GONE);
+            } else if (id == R.id.nav_rooms) {
+                findViewById(R.id.id1).setVisibility(View.GONE);
+                findViewById(R.id.id2).setVisibility(View.GONE);
+                findViewById(R.id.id3).setVisibility(View.VISIBLE);
+                findViewById(R.id.id4).setVisibility(View.GONE);
+                findViewById(R.id.id5).setVisibility(View.GONE);
+                findViewById(R.id.id6).setVisibility(View.GONE);
+                findViewById(R.id.id7).setVisibility(View.GONE);
+                findViewById(R.id.id8).setVisibility(View.GONE);
+                findViewById(R.id.id9).setVisibility(View.GONE);
+                findViewById(R.id.id10).setVisibility(View.GONE);
+                findViewById(R.id.id11).setVisibility(View.GONE);
 
             } else if (id == R.id.nav_RoomDe) {
+                findViewById(R.id.id1).setVisibility(View.GONE);
+                findViewById(R.id.id2).setVisibility(View.GONE);
+                findViewById(R.id.id3).setVisibility(View.GONE);
+                findViewById(R.id.id4).setVisibility(View.VISIBLE);
+                findViewById(R.id.id5).setVisibility(View.GONE);
+                findViewById(R.id.id6).setVisibility(View.GONE);
+                findViewById(R.id.id7).setVisibility(View.GONE);
+                findViewById(R.id.id8).setVisibility(View.GONE);
+                findViewById(R.id.id9).setVisibility(View.GONE);
+                findViewById(R.id.id10).setVisibility(View.GONE);
+                findViewById(R.id.id11).setVisibility(View.GONE);
 
             } else if (id == R.id.nav_promo) {
+                findViewById(R.id.id1).setVisibility(View.GONE);
+                findViewById(R.id.id2).setVisibility(View.GONE);
+                findViewById(R.id.id3).setVisibility(View.GONE);
+                findViewById(R.id.id4).setVisibility(View.GONE);
+                findViewById(R.id.id5).setVisibility(View.VISIBLE);
+                findViewById(R.id.id6).setVisibility(View.GONE);
+                findViewById(R.id.id7).setVisibility(View.GONE);
+                findViewById(R.id.id8).setVisibility(View.GONE);
+                findViewById(R.id.id9).setVisibility(View.GONE);
+                findViewById(R.id.id10).setVisibility(View.GONE);
+                findViewById(R.id.id11).setVisibility(View.GONE);
 
             } else if (id == R.id.nav_reports) {
+                findViewById(R.id.id1).setVisibility(View.GONE);
+                findViewById(R.id.id2).setVisibility(View.GONE);
+                findViewById(R.id.id3).setVisibility(View.GONE);
+                findViewById(R.id.id4).setVisibility(View.GONE);
+                findViewById(R.id.id5).setVisibility(View.GONE);
+                findViewById(R.id.id6).setVisibility(View.VISIBLE);
+                findViewById(R.id.id7).setVisibility(View.GONE);
+                findViewById(R.id.id8).setVisibility(View.GONE);
+                findViewById(R.id.id9).setVisibility(View.GONE);
+                findViewById(R.id.id10).setVisibility(View.GONE);
+                findViewById(R.id.id11).setVisibility(View.GONE);
 
             } else if (id == R.id.nav_currency) {
+                findViewById(R.id.id1).setVisibility(View.GONE);
+                findViewById(R.id.id2).setVisibility(View.GONE);
+                findViewById(R.id.id3).setVisibility(View.GONE);
+                findViewById(R.id.id4).setVisibility(View.GONE);
+                findViewById(R.id.id5).setVisibility(View.GONE);
+                findViewById(R.id.id6).setVisibility(View.GONE);
+                findViewById(R.id.id7).setVisibility(View.VISIBLE);
+                findViewById(R.id.id8).setVisibility(View.GONE);
+                findViewById(R.id.id9).setVisibility(View.GONE);
+                findViewById(R.id.id10).setVisibility(View.GONE);
+                findViewById(R.id.id11).setVisibility(View.GONE);
 
             } else if (id == R.id.nav_settings) {
+                findViewById(R.id.id1).setVisibility(View.GONE);
+                findViewById(R.id.id2).setVisibility(View.GONE);
+                findViewById(R.id.id3).setVisibility(View.GONE);
+                findViewById(R.id.id4).setVisibility(View.GONE);
+                findViewById(R.id.id5).setVisibility(View.GONE);
+                findViewById(R.id.id6).setVisibility(View.GONE);
+                findViewById(R.id.id7).setVisibility(View.GONE);
+                findViewById(R.id.id8).setVisibility(View.VISIBLE);
+                findViewById(R.id.id9).setVisibility(View.GONE);
+                findViewById(R.id.id10).setVisibility(View.GONE);
+                findViewById(R.id.id11).setVisibility(View.GONE);
 
             } else if (id == R.id.nav_language) {
+                findViewById(R.id.id1).setVisibility(View.GONE);
+                findViewById(R.id.id2).setVisibility(View.GONE);
+                findViewById(R.id.id3).setVisibility(View.GONE);
+                findViewById(R.id.id4).setVisibility(View.GONE);
+                findViewById(R.id.id5).setVisibility(View.GONE);
+                findViewById(R.id.id6).setVisibility(View.GONE);
+                findViewById(R.id.id7).setVisibility(View.GONE);
+                findViewById(R.id.id8).setVisibility(View.GONE);
+                findViewById(R.id.id9).setVisibility(View.VISIBLE);
+                findViewById(R.id.id10).setVisibility(View.GONE);
+                findViewById(R.id.id11).setVisibility(View.GONE);
 
             } else if (id == R.id.nav_help) {
+                findViewById(R.id.id1).setVisibility(View.GONE);
+                findViewById(R.id.id2).setVisibility(View.GONE);
+                findViewById(R.id.id3).setVisibility(View.GONE);
+                findViewById(R.id.id4).setVisibility(View.GONE);
+                findViewById(R.id.id5).setVisibility(View.GONE);
+                findViewById(R.id.id6).setVisibility(View.GONE);
+                findViewById(R.id.id7).setVisibility(View.GONE);
+                findViewById(R.id.id8).setVisibility(View.GONE);
+                findViewById(R.id.id9).setVisibility(View.GONE);
+                findViewById(R.id.id10).setVisibility(View.VISIBLE);
+                findViewById(R.id.id11).setVisibility(View.GONE);
 
             } else if (id == R.id.nav_send) {
 
@@ -163,6 +258,17 @@ public class Home extends AppCompatActivity
                 }
 
             } else if (id == R.id.nav_about) {
+                findViewById(R.id.id1).setVisibility(View.GONE);
+                findViewById(R.id.id2).setVisibility(View.GONE);
+                findViewById(R.id.id3).setVisibility(View.GONE);
+                findViewById(R.id.id4).setVisibility(View.GONE);
+                findViewById(R.id.id5).setVisibility(View.GONE);
+                findViewById(R.id.id6).setVisibility(View.GONE);
+                findViewById(R.id.id7).setVisibility(View.GONE);
+                findViewById(R.id.id8).setVisibility(View.GONE);
+                findViewById(R.id.id9).setVisibility(View.GONE);
+                findViewById(R.id.id10).setVisibility(View.GONE);
+                findViewById(R.id.id11).setVisibility(View.VISIBLE);
 
             } else if (id == R.id.nav_share) {
 
