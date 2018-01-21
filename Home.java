@@ -7,9 +7,6 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -19,19 +16,26 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.app.DatePickerDialog;
-import android.text.InputType;
 import android.widget.DatePicker;
-import android.widget.EditText;
-import android.widget.NumberPicker;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import java.util.Calendar;
-import java.util.Date;
 
-import android.widget.CalendarView;
-import android.widget.LinearLayout;
-import android.widget.Toast;
+import com.thiman.android.reservationmanager.NavigationBar.AboutUs;
+import com.thiman.android.reservationmanager.NavigationBar.AvailableRooms;
+import com.thiman.android.reservationmanager.NavigationBar.Bookings;
+import com.thiman.android.reservationmanager.NavigationBar.Currency;
+import com.thiman.android.reservationmanager.NavigationBar.Help;
+import com.thiman.android.reservationmanager.NavigationBar.Language;
+import com.thiman.android.reservationmanager.NavigationBar.Promotions;
+import com.thiman.android.reservationmanager.NavigationBar.Reports;
+import com.thiman.android.reservationmanager.NavigationBar.RoomDetails;
+import com.thiman.android.reservationmanager.NavigationBar.RoomDetails2;
+import com.thiman.android.reservationmanager.NavigationBar.Settings;
 
 
 public class Home extends AppCompatActivity
@@ -39,9 +43,16 @@ public class Home extends AppCompatActivity
 
     Button checkIn;
     Button checkOut;
+    Button search;
     DatePickerDialog picker;
     TextView tvci;
     TextView tvco;
+    Animation fadeIn;
+    RelativeLayout rl1;
+    private DrawerLayout drawer;
+    private ActionBarDrawerToggle toggle;
+    private Toolbar mToolbar;
+
 
 
 
@@ -51,9 +62,21 @@ public class Home extends AppCompatActivity
         setContentView(R.layout.activity_home);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        fadeIn = AnimationUtils.loadAnimation(this,R.anim.imageanim);
+        rl1 = findViewById(R.id.home);
+        rl1.setAnimation(fadeIn);
+        checkIn = findViewById(R.id.buttonci);
+        checkIn.setAnimation(fadeIn);
+
+        checkOut = findViewById(R.id.buttonco);
+        checkOut.setAnimation(fadeIn);
+
+
+
 
 
         FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setAnimation(fadeIn);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -72,10 +95,13 @@ public class Home extends AppCompatActivity
 
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        drawer.setScrimColor(Color.parseColor("#33000000"));
+//        drawer.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
+      //  getSupportActionBar().setDisplayHomeAsUpEnabled(true);  // set up action bar and toggle button
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -113,15 +139,25 @@ public class Home extends AppCompatActivity
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
+//        if(toggle.onOptionsItemSelected(item)){
+//            return true;
+//
+//        }
+//        return super.onOptionsItemSelected(item);
+        int id = item.getItemId();
+            if(toggle.onOptionsItemSelected(item)){
+                return true;
+            }
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
 
+
         return super.onOptionsItemSelected(item);
     }
+
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -132,120 +168,44 @@ public class Home extends AppCompatActivity
 
             if (id == R.id.nav_booking) {
                 // Handle the camera action
-                findViewById(R.id.id1).setVisibility(View.GONE);
-                findViewById(R.id.id2).setVisibility(View.VISIBLE);
-                findViewById(R.id.id3).setVisibility(View.GONE);
-                findViewById(R.id.id4).setVisibility(View.GONE);
-                findViewById(R.id.id5).setVisibility(View.GONE);
-                findViewById(R.id.id6).setVisibility(View.GONE);
-                findViewById(R.id.id7).setVisibility(View.GONE);
-                findViewById(R.id.id8).setVisibility(View.GONE);
-                findViewById(R.id.id9).setVisibility(View.GONE);
-                findViewById(R.id.id10).setVisibility(View.GONE);
-                findViewById(R.id.id11).setVisibility(View.GONE);
-            } else if (id == R.id.nav_rooms) {
-                findViewById(R.id.id1).setVisibility(View.GONE);
-                findViewById(R.id.id2).setVisibility(View.GONE);
-                findViewById(R.id.id3).setVisibility(View.VISIBLE);
-                findViewById(R.id.id4).setVisibility(View.GONE);
-                findViewById(R.id.id5).setVisibility(View.GONE);
-                findViewById(R.id.id6).setVisibility(View.GONE);
-                findViewById(R.id.id7).setVisibility(View.GONE);
-                findViewById(R.id.id8).setVisibility(View.GONE);
-                findViewById(R.id.id9).setVisibility(View.GONE);
-                findViewById(R.id.id10).setVisibility(View.GONE);
-                findViewById(R.id.id11).setVisibility(View.GONE);
+               Intent booking = new Intent(Home.this,Bookings.class);
+                startActivity(booking);
 
-            } else if (id == R.id.nav_RoomDe) {
-                findViewById(R.id.id1).setVisibility(View.GONE);
-                findViewById(R.id.id2).setVisibility(View.GONE);
-                findViewById(R.id.id3).setVisibility(View.GONE);
-                findViewById(R.id.id4).setVisibility(View.VISIBLE);
-                findViewById(R.id.id5).setVisibility(View.GONE);
-                findViewById(R.id.id6).setVisibility(View.GONE);
-                findViewById(R.id.id7).setVisibility(View.GONE);
-                findViewById(R.id.id8).setVisibility(View.GONE);
-                findViewById(R.id.id9).setVisibility(View.GONE);
-                findViewById(R.id.id10).setVisibility(View.GONE);
-                findViewById(R.id.id11).setVisibility(View.GONE);
+
+            } else if (id == R.id.nav_rooms) {
+
+                Intent availableRooms = new Intent(Home.this,AvailableRooms.class);
+                startActivity(availableRooms);
+
+
+           } else if (id == R.id.nav_RoomDe) {
+
+                Intent roomDetails = new Intent(Home.this,RoomDetails2.class);
+                startActivity(roomDetails);
 
             } else if (id == R.id.nav_promo) {
-                findViewById(R.id.id1).setVisibility(View.GONE);
-                findViewById(R.id.id2).setVisibility(View.GONE);
-                findViewById(R.id.id3).setVisibility(View.GONE);
-                findViewById(R.id.id4).setVisibility(View.GONE);
-                findViewById(R.id.id5).setVisibility(View.VISIBLE);
-                findViewById(R.id.id6).setVisibility(View.GONE);
-                findViewById(R.id.id7).setVisibility(View.GONE);
-                findViewById(R.id.id8).setVisibility(View.GONE);
-                findViewById(R.id.id9).setVisibility(View.GONE);
-                findViewById(R.id.id10).setVisibility(View.GONE);
-                findViewById(R.id.id11).setVisibility(View.GONE);
+                Intent promotions = new Intent(Home.this,Promotions.class);
+                startActivity(promotions);
 
             } else if (id == R.id.nav_reports) {
-                findViewById(R.id.id1).setVisibility(View.GONE);
-                findViewById(R.id.id2).setVisibility(View.GONE);
-                findViewById(R.id.id3).setVisibility(View.GONE);
-                findViewById(R.id.id4).setVisibility(View.GONE);
-                findViewById(R.id.id5).setVisibility(View.GONE);
-                findViewById(R.id.id6).setVisibility(View.VISIBLE);
-                findViewById(R.id.id7).setVisibility(View.GONE);
-                findViewById(R.id.id8).setVisibility(View.GONE);
-                findViewById(R.id.id9).setVisibility(View.GONE);
-                findViewById(R.id.id10).setVisibility(View.GONE);
-                findViewById(R.id.id11).setVisibility(View.GONE);
+                Intent reports = new Intent(Home.this,Reports.class);
+                startActivity(reports);
 
             } else if (id == R.id.nav_currency) {
-                findViewById(R.id.id1).setVisibility(View.GONE);
-                findViewById(R.id.id2).setVisibility(View.GONE);
-                findViewById(R.id.id3).setVisibility(View.GONE);
-                findViewById(R.id.id4).setVisibility(View.GONE);
-                findViewById(R.id.id5).setVisibility(View.GONE);
-                findViewById(R.id.id6).setVisibility(View.GONE);
-                findViewById(R.id.id7).setVisibility(View.VISIBLE);
-                findViewById(R.id.id8).setVisibility(View.GONE);
-                findViewById(R.id.id9).setVisibility(View.GONE);
-                findViewById(R.id.id10).setVisibility(View.GONE);
-                findViewById(R.id.id11).setVisibility(View.GONE);
 
+                Intent currency = new Intent(Home.this,Currency.class);
+                startActivity(currency);
             } else if (id == R.id.nav_settings) {
-                findViewById(R.id.id1).setVisibility(View.GONE);
-                findViewById(R.id.id2).setVisibility(View.GONE);
-                findViewById(R.id.id3).setVisibility(View.GONE);
-                findViewById(R.id.id4).setVisibility(View.GONE);
-                findViewById(R.id.id5).setVisibility(View.GONE);
-                findViewById(R.id.id6).setVisibility(View.GONE);
-                findViewById(R.id.id7).setVisibility(View.GONE);
-                findViewById(R.id.id8).setVisibility(View.VISIBLE);
-                findViewById(R.id.id9).setVisibility(View.GONE);
-                findViewById(R.id.id10).setVisibility(View.GONE);
-                findViewById(R.id.id11).setVisibility(View.GONE);
+                Intent settings = new Intent(Home.this,Settings.class);
+                startActivity(settings);
 
             } else if (id == R.id.nav_language) {
-                findViewById(R.id.id1).setVisibility(View.GONE);
-                findViewById(R.id.id2).setVisibility(View.GONE);
-                findViewById(R.id.id3).setVisibility(View.GONE);
-                findViewById(R.id.id4).setVisibility(View.GONE);
-                findViewById(R.id.id5).setVisibility(View.GONE);
-                findViewById(R.id.id6).setVisibility(View.GONE);
-                findViewById(R.id.id7).setVisibility(View.GONE);
-                findViewById(R.id.id8).setVisibility(View.GONE);
-                findViewById(R.id.id9).setVisibility(View.VISIBLE);
-                findViewById(R.id.id10).setVisibility(View.GONE);
-                findViewById(R.id.id11).setVisibility(View.GONE);
+                Intent lang = new Intent(Home.this,Language.class);
+                startActivity(lang);
 
             } else if (id == R.id.nav_help) {
-                findViewById(R.id.id1).setVisibility(View.GONE);
-                findViewById(R.id.id2).setVisibility(View.GONE);
-                findViewById(R.id.id3).setVisibility(View.GONE);
-                findViewById(R.id.id4).setVisibility(View.GONE);
-                findViewById(R.id.id5).setVisibility(View.GONE);
-                findViewById(R.id.id6).setVisibility(View.GONE);
-                findViewById(R.id.id7).setVisibility(View.GONE);
-                findViewById(R.id.id8).setVisibility(View.GONE);
-                findViewById(R.id.id9).setVisibility(View.GONE);
-                findViewById(R.id.id10).setVisibility(View.VISIBLE);
-                findViewById(R.id.id11).setVisibility(View.GONE);
+                Intent help = new Intent(Home.this,Help.class);
+                startActivity(help);
 
             } else if (id == R.id.nav_send) {
 
@@ -258,21 +218,18 @@ public class Home extends AppCompatActivity
                 }
 
             } else if (id == R.id.nav_about) {
-                findViewById(R.id.id1).setVisibility(View.GONE);
-                findViewById(R.id.id2).setVisibility(View.GONE);
-                findViewById(R.id.id3).setVisibility(View.GONE);
-                findViewById(R.id.id4).setVisibility(View.GONE);
-                findViewById(R.id.id5).setVisibility(View.GONE);
-                findViewById(R.id.id6).setVisibility(View.GONE);
-                findViewById(R.id.id7).setVisibility(View.GONE);
-                findViewById(R.id.id8).setVisibility(View.GONE);
-                findViewById(R.id.id9).setVisibility(View.GONE);
-                findViewById(R.id.id10).setVisibility(View.GONE);
-                findViewById(R.id.id11).setVisibility(View.VISIBLE);
+                Intent about = new Intent(Home.this,AboutUs.class);
+                startActivity(about);
 
             } else if (id == R.id.nav_share) {
 
+
+        } else if (id == R.id.nav_logout) {
+
+
             }
+
+
 
             DrawerLayout drawer = findViewById(R.id.drawer_layout);
             drawer.closeDrawer(GravityCompat.START);

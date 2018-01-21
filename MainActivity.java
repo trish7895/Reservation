@@ -52,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
 //        reservation.setAnimation(fromTop);
 
         lolgn = findViewById(R.id.lolgn);
+       
+
         fadeIn = AnimationUtils.loadAnimation(this,R.anim.imageanim);
         lolgn.setAnimation(fadeIn);
 
@@ -79,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
                 //    Common.currentUser= user;
                 homeIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK| Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(homeIntent);
-                finish();
+               finish();
 
 //                    table_user.addValueEventListener(new ValueEventListener() {
 //                        @Override
