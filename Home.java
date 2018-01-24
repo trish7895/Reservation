@@ -21,6 +21,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.app.DatePickerDialog;
 import android.widget.DatePicker;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import java.util.Calendar;
@@ -33,8 +34,6 @@ import com.thiman.android.reservationmanager.NavigationBar.Help;
 import com.thiman.android.reservationmanager.NavigationBar.Language;
 import com.thiman.android.reservationmanager.NavigationBar.Promotions;
 import com.thiman.android.reservationmanager.NavigationBar.Reports;
-import com.thiman.android.reservationmanager.NavigationBar.RoomDetails;
-import com.thiman.android.reservationmanager.NavigationBar.RoomDetails2;
 import com.thiman.android.reservationmanager.NavigationBar.Settings;
 
 
@@ -49,6 +48,7 @@ public class Home extends AppCompatActivity
     TextView tvco;
     Animation fadeIn;
     RelativeLayout rl1;
+    LinearLayout ll2;
     private DrawerLayout drawer;
     private ActionBarDrawerToggle toggle;
     private Toolbar mToolbar;
@@ -60,16 +60,19 @@ public class Home extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+         mToolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
+        if(getSupportActionBar() != null){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
         fadeIn = AnimationUtils.loadAnimation(this,R.anim.imageanim);
         rl1 = findViewById(R.id.home);
         rl1.setAnimation(fadeIn);
-        checkIn = findViewById(R.id.buttonci);
-        checkIn.setAnimation(fadeIn);
 
+        checkIn = findViewById(R.id.buttonci);
         checkOut = findViewById(R.id.buttonco);
-        checkOut.setAnimation(fadeIn);
+        
 
 
 
@@ -94,11 +97,11 @@ public class Home extends AppCompatActivity
         });
 
 
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+         drawer = findViewById(R.id.drawer_layout);
         drawer.setScrimColor(Color.parseColor("#33000000"));
 //        drawer.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+         toggle = new ActionBarDrawerToggle(
+                this, drawer, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
       //  getSupportActionBar().setDisplayHomeAsUpEnabled(true);  // set up action bar and toggle button
@@ -180,8 +183,8 @@ public class Home extends AppCompatActivity
 
            } else if (id == R.id.nav_RoomDe) {
 
-                Intent roomDetails = new Intent(Home.this,RoomDetails2.class);
-                startActivity(roomDetails);
+//                Intent roomDetails = new Intent(Home.this,RoomDetails.class);
+//                startActivity(roomDetails);
 
             } else if (id == R.id.nav_promo) {
                 Intent promotions = new Intent(Home.this,Promotions.class);
@@ -243,36 +246,36 @@ public class Home extends AppCompatActivity
         public void chkIn(View v) {
 
 
-            final Calendar cldr1 = Calendar.getInstance();
-            int dayci = cldr1.get(Calendar.DAY_OF_MONTH);
-            int month = cldr1.get(Calendar.MONTH);
-            int year = cldr1.get(Calendar.YEAR);
-            // date picker dialog
-            picker = new DatePickerDialog(Home.this,AlertDialog.THEME_DEVICE_DEFAULT_DARK,
-                    new DatePickerDialog.OnDateSetListener() {
-                        @Override
-                        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+        final Calendar cldr1 = Calendar.getInstance();
+        int dayci = cldr1.get(Calendar.DAY_OF_MONTH);
+        int month = cldr1.get(Calendar.MONTH);
+        int year = cldr1.get(Calendar.YEAR);
+        // date picker dialog
+        picker = new DatePickerDialog(Home.this,AlertDialog.THEME_DEVICE_DEFAULT_DARK,
+                new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
 
-                            tvci.setText(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
-                            tvco.setText(dayOfMonth+1 +"-"+ (monthOfYear + 1) + "-" + year);
-                        }
-                    }, year, month, dayci);
+                        tvci.setText(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
+                        tvco.setText(dayOfMonth+1 +"-"+ (monthOfYear + 1) + "-" + year);
+                    }
+                }, year, month, dayci);
 
-            //Get the DatePicker instance from DatePickerDialog
-            DatePicker dp = picker.getDatePicker();
-            //Set the DatePicker minimum date selection to current date
-            dp.setMinDate(cldr1.getTimeInMillis());//get the current day
-            //dp.setMinDate(System.currentTimeMillis() - 1000);// Alternate way to get the current day
+        //Get the DatePicker instance from DatePickerDialog
+        DatePicker dp = picker.getDatePicker();
+        //Set the DatePicker minimum date selection to current date
+        dp.setMinDate(cldr1.getTimeInMillis());//get the current day
+        //dp.setMinDate(System.currentTimeMillis() - 1000);// Alternate way to get the current day
 
-            //Add 6 days with current date
-            cldr1.add(Calendar.DAY_OF_MONTH,6);
+        //Add 6 days with current date
+        cldr1.add(Calendar.DAY_OF_MONTH,6);
 
-            //Set the maximum date to select from DatePickerDialog
-            dp.setMaxDate(cldr1.getTimeInMillis());
-            //Now DatePickerDialog have 7 days range to get selection any one from those dates
-            picker.show();
+        //Set the maximum date to select from DatePickerDialog
+        dp.setMaxDate(cldr1.getTimeInMillis());
+        //Now DatePickerDialog have 7 days range to get selection any one from those dates
+        picker.show();
 
-        }
+    }
 
     public void chkout(final View v) {
 
@@ -318,7 +321,7 @@ public class Home extends AppCompatActivity
                             dialog.show();
 
 //
-                      }
+                        }
                     }
                 }, year, month, day);
         //Get the DatePicker instance from DatePickerDialog
