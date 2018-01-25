@@ -72,7 +72,7 @@ public class Home extends AppCompatActivity
 
         checkIn = findViewById(R.id.buttonci);
         checkOut = findViewById(R.id.buttonco);
-        
+
 
 
 
@@ -214,7 +214,7 @@ public class Home extends AppCompatActivity
 
                 Intent intent = new Intent(Intent.ACTION_SENDTO);
                 intent.setData(Uri.parse("mailto:")); // only email apps should handle this
-                intent.putExtra(Intent.EXTRA_SUBJECT, "Confirming Booking");
+                intent.putExtra(Intent.EXTRA_SUBJECT, "Confirming Bookings");
                 intent.putExtra(Intent.EXTRA_TEXT, "Your Reservation has been confirmed.Contact us for more Details.");
                 if (intent.resolveActivity(getPackageManager()) != null) {
                     startActivity(intent);
