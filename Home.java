@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -22,8 +23,11 @@ import android.widget.Button;
 import android.app.DatePickerDialog;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
+import android.widget.NumberPicker;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import com.thiman.android.reservationmanager.NavigationBar.AboutUs;
@@ -34,6 +38,7 @@ import com.thiman.android.reservationmanager.NavigationBar.Help;
 import com.thiman.android.reservationmanager.NavigationBar.Language;
 import com.thiman.android.reservationmanager.NavigationBar.Promotions;
 import com.thiman.android.reservationmanager.NavigationBar.Reports;
+import com.thiman.android.reservationmanager.NavigationBar.RoomDetails;
 import com.thiman.android.reservationmanager.NavigationBar.Settings;
 
 
@@ -44,8 +49,7 @@ public class Home extends AppCompatActivity
     Button checkOut;
     Button search;
     DatePickerDialog picker;
-    TextView tvci;
-    TextView tvco;
+    TextView tvci,tvco,num1,num2,num3;
     Animation fadeIn;
     RelativeLayout rl1;
     LinearLayout ll2;
@@ -183,8 +187,8 @@ public class Home extends AppCompatActivity
 
            } else if (id == R.id.nav_RoomDe) {
 
-//                Intent roomDetails = new Intent(Home.this,RoomDetails.class);
-//                startActivity(roomDetails);
+                Intent roomDetails = new Intent(Home.this,RoomDetails.class);
+                startActivity(roomDetails);
 
             } else if (id == R.id.nav_promo) {
                 Intent promotions = new Intent(Home.this,Promotions.class);
@@ -244,11 +248,10 @@ public class Home extends AppCompatActivity
 
 
         public void chkIn(View v) {
-
-
+            SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd" );
         final Calendar cldr1 = Calendar.getInstance();
-        int dayci = cldr1.get(Calendar.DAY_OF_MONTH);
-        int month = cldr1.get(Calendar.MONTH);
+         int dayci = cldr1.get(Calendar.DAY_OF_MONTH);
+         int month = cldr1.get(Calendar.MONTH);
         int year = cldr1.get(Calendar.YEAR);
         // date picker dialog
         picker = new DatePickerDialog(Home.this,AlertDialog.THEME_DEVICE_DEFAULT_DARK,
@@ -256,8 +259,16 @@ public class Home extends AppCompatActivity
                     @Override
                     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
 
-                        tvci.setText(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
-                        tvco.setText(dayOfMonth+1 +"-"+ (monthOfYear + 1) + "-" + year);
+                        Log.i("check","0");
+                            tvci.setText(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
+
+                            if((dayOfMonth == 31) && ((monthOfYear+1)==1))
+                        tvco.setText("1" + "-" + ((monthOfYear + 1)+1) + "-" + year);
+
+
+                        tvco.setText(dayOfMonth + 1 + "-" + (monthOfYear + 1) + "-" + year);
+
+
                     }
                 }, year, month, dayci);
 
@@ -268,7 +279,7 @@ public class Home extends AppCompatActivity
         //dp.setMinDate(System.currentTimeMillis() - 1000);// Alternate way to get the current day
 
         //Add 6 days with current date
-        cldr1.add(Calendar.DAY_OF_MONTH,6);
+       cldr1.add(Calendar.DAY_OF_MONTH,10000);
 
         //Set the maximum date to select from DatePickerDialog
         dp.setMaxDate(cldr1.getTimeInMillis());
@@ -310,8 +321,13 @@ public class Home extends AppCompatActivity
                             builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    // Do something when click positive button
-                                    tvco.setText(dayOfMonth+1 + "-" + (monthOfYear + 1) + "-" + year);
+
+
+//                                 if(dayOfMonth == 31 && ((monthOfYear == 1)||(monthOfYear == 3)||(monthOfYear == 5)||(monthOfYear == 7)||(monthOfYear == 8)||(monthOfYear == 10)||(monthOfYear == 12))) {
+////                                        // Do something when click positive button
+                                        tvco.setText(dayOfMonth + 1 + "-" + (monthOfYear + 1) + "-" + year);
+//
+//                                   }
 
                                 }
                             });
@@ -331,7 +347,7 @@ public class Home extends AppCompatActivity
         //dp.setMinDate(System.currentTimeMillis() - 1000);// Alternate way to get the current day
 
         //Add 6 days with current date
-        cldr.add(Calendar.DAY_OF_MONTH,6);
+        cldr.add(Calendar.DAY_OF_MONTH,10000);
 
         //Set the maximum date to select from DatePickerDialog
         dp.setMaxDate(cldr.getTimeInMillis());
@@ -341,12 +357,28 @@ public class Home extends AppCompatActivity
 
     }
 
+    public void roomPick(){
+        NumberPicker np1 = findViewById(R.id.np1);
+     np1.setMinValue(0);
+     np1.setMaxValue(20);
+     np1.setWrapSelectorWheel(false);
+
+
+    }
+
 //    NumberPicker np1 = (NumberPicker) findViewById(R.id.np1);
 //    NumberPicker np2 = (NumberPicker) findViewById(R.id.np2);
 //    NumberPicker np3 = (NumberPicker) findViewById(R.id.np3);
 //
 //
+
+//    public NumberPicker getNp3() {
 //
+//        np3.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
+//        return np3;
+//    }
+
+
 //    //Populate NumberPicker values from minimum and maximum value range
 //    //Set the minimum value of NumberPicker
 //        np1.setMinValue(0)
@@ -364,6 +396,6 @@ public class Home extends AppCompatActivity
 //            tv.setText("Selected Number : " + newVal);
 //        }
 //    })
-//
+
 
 }
