@@ -1,12 +1,18 @@
 package com.thiman.android.reservationmanager;
 
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -19,17 +25,45 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.app.DatePickerDialog;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
-import android.widget.NumberPicker;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
 
+import com.thiman.android.reservationmanager.Fragments.SelectPackageType;
+import com.thiman.android.reservationmanager.Fragments.SelectRoomTypeFragment;
 import com.thiman.android.reservationmanager.NavigationBar.AboutUs;
 import com.thiman.android.reservationmanager.NavigationBar.AvailableRooms;
 import com.thiman.android.reservationmanager.NavigationBar.Bookings;
@@ -40,6 +74,12 @@ import com.thiman.android.reservationmanager.NavigationBar.Promotions;
 import com.thiman.android.reservationmanager.NavigationBar.Reports;
 import com.thiman.android.reservationmanager.NavigationBar.RoomDetails;
 import com.thiman.android.reservationmanager.NavigationBar.Settings;
+import com.thiman.android.reservationmanager.NavigationBar.Share;
+import com.thiman.android.reservationmanager.Util.HttpCall;
+
+import org.json.JSONObject;
+
+import static java.lang.System.out;
 
 
 public class Home extends AppCompatActivity
@@ -47,15 +87,19 @@ public class Home extends AppCompatActivity
 
     Button checkIn;
     Button checkOut;
-    Button search;
+    Button search,rincre,rdecre,aincre,adecre,cincre,cdecre;
     DatePickerDialog picker;
-    TextView tvci,tvco,num1,num2,num3;
+    TextView tvci,tvco,noroom,noadult,nochild,noroom1,noadult1,nochild1,type;
+    int room = 1,adult = 1,child = 1;
     Animation fadeIn;
     RelativeLayout rl1;
     LinearLayout ll2;
     private DrawerLayout drawer;
     private ActionBarDrawerToggle toggle;
     private Toolbar mToolbar;
+    String roomCount, adultCount, childrenCount;
+    private CheckBox cb1, cb2, cb3, cb4,cb5,cb6,cb7,cb8,cb9;
+    Spinner rTypeSpinner,pTypeSpinner;
 
 
 
@@ -64,6 +108,72 @@ public class Home extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        rTypeSpinner = findViewById(R.id.rType);
+        pTypeSpinner = findViewById(R.id.pType);
+
+
+        final List<String> rSpinner= new ArrayList<String>();
+        final List<String> pSpinner= new ArrayList<String>();
+
+        rSpinner.add("Single");
+        rSpinner.add("Double");
+        rSpinner.add("Double Double");
+        rSpinner.add("Cabana");
+        rSpinner.add("Twin");
+        rSpinner.add("Parlor");
+
+        pSpinner.add("Normal");
+        pSpinner.add("Gold");
+        pSpinner.add("Silver");
+        pSpinner.add("Platinum");
+
+        ArrayAdapter spinnerAdapter = new ArrayAdapter(Home.this,R.layout.support_simple_spinner_dropdown_item,rSpinner);
+        ArrayAdapter spinnerAdapterP = new ArrayAdapter(Home.this,R.layout.support_simple_spinner_dropdown_item,pSpinner);
+
+        rTypeSpinner.setAdapter(spinnerAdapter);
+        pTypeSpinner.setAdapter(spinnerAdapterP);
+
+
+     rTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+         @Override
+         public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+             Toast.makeText(Home.this,rSpinner.get(i),Toast.LENGTH_SHORT).show();
+         }
+
+         @Override
+         public void onNothingSelected(AdapterView<?> adapterView) {
+
+         }
+     });
+
+        pTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                Toast.makeText(Home.this,pSpinner.get(i),Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+
+
+
+
+
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mOrderReceiver,
+                new IntentFilter("order"));
+
+
+        noroom = findViewById(R.id.room);
+        noadult = findViewById(R.id.adult);
+        nochild = findViewById(R.id.child);
+        search = findViewById(R.id.search1);
+
+
          mToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         if(getSupportActionBar() != null){
@@ -78,6 +188,12 @@ public class Home extends AppCompatActivity
         checkOut = findViewById(R.id.buttonco);
 
 
+
+
+//        noroom1 = (TextView)findViewById(R.id.room);
+//        noadult1 = (TextView)findViewById(R.id.adult);
+//        nochild1 = (TextView)findViewById(R.id.child);
+//        rincre = (Button)findViewById(R.id.increr) ;
 
 
 
@@ -119,6 +235,35 @@ public class Home extends AppCompatActivity
 
 
 
+
+//        search.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                cb1 = findViewById(R.id.c1);
+//                cb2 = findViewById(R.id.c2);
+//                cb3 = findViewById(R.id.c3);
+//
+//                cb4 = findViewById(R.id.c4);
+//                cb5 = findViewById(R.id.c5);
+//                cb6 = findViewById(R.id.c6);
+//
+//                cb7 = findViewById(R.id.c7);
+//                cb8 = findViewById(R.id.c8);
+//                cb9 = findViewById(R.id.c9);
+//                String roomType="";
+//                if(cb1.isChecked()){
+//                    roomType=cb1.getText().toString();
+//                }
+//                String noRoom=noroom.toString();
+//                String noAdult=noadult.toString();
+//                String noChild=nochild.toString();
+//              //  cb10 = findViewById(R.id.c10);
+//                MyAsync myAsync= new MyAsync();
+//                myAsync.execute("adminnew","123456");
+//
+//
+//            }
+//        });
 
     }
 
@@ -229,7 +374,8 @@ public class Home extends AppCompatActivity
                 startActivity(about);
 
             } else if (id == R.id.nav_share) {
-
+                Intent share = new Intent(Home.this,Share.class);
+                startActivity(share);
 
         } else if (id == R.id.nav_logout) {
 
@@ -357,45 +503,110 @@ public class Home extends AppCompatActivity
 
     }
 
-    public void roomPick(){
-        NumberPicker np1 = findViewById(R.id.np1);
-     np1.setMinValue(0);
-     np1.setMaxValue(20);
-     np1.setWrapSelectorWheel(false);
 
 
-    }
+    public void select(View view){
 
-//    NumberPicker np1 = (NumberPicker) findViewById(R.id.np1);
-//    NumberPicker np2 = (NumberPicker) findViewById(R.id.np2);
-//    NumberPicker np3 = (NumberPicker) findViewById(R.id.np3);
-//
-//
+        SelectRoomTypeFragment commentFragment = new SelectRoomTypeFragment();
+        commentFragment.show(getSupportFragmentManager(),"Select ...");
 
-//    public NumberPicker getNp3() {
-//
-//        np3.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
-//        return np3;
-//    }
+   }
 
 
-//    //Populate NumberPicker values from minimum and maximum value range
-//    //Set the minimum value of NumberPicker
-//        np1.setMinValue(0)
-//    //Specify the maximum value/number of NumberPicker
-//        np1.setMaxValue(10)
-//
-//    //Gets whether the selector wheel wraps when reaching the min/max value.
-//        np1.setWrapSelectorWheel(true)
-//
-//    //Set a value change listener for NumberPicker
-//        np1.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-//        @Override
-//        public void onValueChange(NumberPicker picker, int oldVal, int newVal){
-//            //Display the newly selected number from picker
-//            tv.setText("Selected Number : " + newVal);
-//        }
-//    })
+    public BroadcastReceiver mOrderReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            roomCount  =  intent.getStringExtra("roomCount");
+            adultCount  =  intent.getStringExtra("adultCount");
+            childrenCount  =  intent.getStringExtra("childrenCount");
 
+            noroom.setText(roomCount);
+            noadult.setText(adultCount);
+            nochild.setText(childrenCount);
+
+
+            Toast.makeText(getApplicationContext(), roomCount + " " + adultCount + " " + childrenCount,Toast.LENGTH_LONG).show();
+        }
+    };
+
+      public void check(View view){
+        SelectPackageType selectPackageType = new SelectPackageType();
+
+      }
+
+  class MyAsync extends AsyncTask<String,Integer,String>{
+
+      @Override
+      protected void onProgressUpdate(Integer... params) {
+          //super.onProgressUpdate(values);
+          Log.d("progres--->", String.valueOf(params[0]));
+      }
+
+      @Override
+      protected String doInBackground(String... params) {
+
+
+          Log.d("starting  ","doing background");
+          String response=null;
+          int progress=0;
+
+            try{
+                Thread.sleep(10000);
+                URL loginURL = new URL("http://10.0.2.2:3002/login");
+                HttpURLConnection connection = (HttpURLConnection) loginURL.openConnection();
+                connection.setRequestMethod("POST");
+                connection.setRequestProperty("Content-Type", "application/json");
+                connection.setDoInput(true);
+                connection.setDoOutput(true);
+                connection.connect();
+
+                Map<String, String> loginMap = new HashMap<>();
+                loginMap.put("username", params[0]);
+                loginMap.put("password", params[1]);
+                JSONObject loginDetails = new JSONObject(loginMap);
+
+                DataOutputStream dataOutputStream = new DataOutputStream(connection.getOutputStream());
+                dataOutputStream.writeBytes(loginDetails.toString());
+
+                dataOutputStream.flush();
+                dataOutputStream.close();
+
+                int statusCode = connection.getResponseCode();
+                if(statusCode == 200) {
+                    InputStream inputStream = new BufferedInputStream(connection.getInputStream());
+                    int ch;
+                    StringBuffer stringBuffer = new StringBuffer();
+                    while ((ch = inputStream.read()) != -1) {
+                        progress++;
+                        stringBuffer.append((char) ch);
+                        publishProgress(progress);
+                    }
+                   // loginResponse = new Response(ResponseCode.CODE_OK, stringBuffer.toString());
+                    response=stringBuffer.toString();
+                    System.out.println("this is my response : "+response);
+                } else {
+                    System.out.println("this is my response : "+statusCode);
+                  //  loginResponse = new Response(ResponseCode.CODE_FAILED, connection.getResponseMessage());
+                }
+                connection.disconnect();
+            } catch (ProtocolException e) {
+                e.printStackTrace();
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+          return response;
+      }
+
+      @Override
+      protected void onPostExecute(String s) {
+          Log.d("onpostg  ",s);
+          System.out.println("this is my response : "+s);
+          super.onPostExecute(s);
+      }
+  }
 
 }

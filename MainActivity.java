@@ -1,9 +1,13 @@
 package com.thiman.android.reservationmanager;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -11,8 +15,23 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.rengwuxian.materialedittext.MaterialEditText;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     LinearLayout lolgn;
@@ -59,10 +78,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+                String username=edtPhnNo.getText().toString();
+                String password=edtPwd.getText().toString();
+                if(!username.isEmpty()||!username.equalsIgnoreCase("")||!password.isEmpty()||!password.equalsIgnoreCase("")){
+                    MyAsync login = new MyAsync();
+                    login.execute(username,password);
+                }
 
-                Intent homeIntent = new Intent(MainActivity.this,Home.class);
-                startActivity(homeIntent);
-                finish();
             }
 
         });
@@ -76,4 +98,114 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
+///asynctask class
+class MyAsync extends AsyncTask<String,Integer,String> {
+
+    @Override
+    protected void onProgressUpdate(Integer... params) {
+        //super.onProgressUpdate(values);
+        Log.d("progres--->", String.valueOf(params[0]));
+    }
+
+    @Override
+    protected String doInBackground(String... params) {
+
+
+        Log.d("starting  ","doing background");
+        String response=null;
+        int progress=0;
+
+        try{
+
+            URL loginURL = new URL("http://10.0.2.2:3002/login");
+            HttpURLConnection connection = (HttpURLConnection) loginURL.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setDoInput(true);
+            connection.setDoOutput(true);
+            connection.connect();
+
+            Map<String, String> loginMap = new HashMap<>();
+            loginMap.put("username", params[0]);
+            loginMap.put("password", params[1]);
+            JSONObject loginDetails = new JSONObject(loginMap);
+
+            DataOutputStream dataOutputStream = new DataOutputStream(connection.getOutputStream());
+            dataOutputStream.writeBytes(loginDetails.toString());
+
+            dataOutputStream.flush();
+            dataOutputStream.close();
+
+            int statusCode = connection.getResponseCode();
+            if(statusCode == 200) {
+                InputStream inputStream = new BufferedInputStream(connection.getInputStream());
+                int ch;
+                StringBuffer stringBuffer = new StringBuffer();
+                while ((ch = inputStream.read()) != -1) {
+                    progress++;
+                    stringBuffer.append((char) ch);
+                    publishProgress(progress);
+                }
+                // loginResponse = new Response(ResponseCode.CODE_OK, stringBuffer.toString());
+                response=stringBuffer.toString();
+                System.out.println("this is my response : "+response);
+            } else {
+                System.out.println("this is my response code : "+statusCode);
+                JSONObject error_response =new JSONObject();
+                try {
+                    error_response.put("status",String.valueOf(statusCode));
+                    error_response.put("message","Login failed !");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                return error_response.toString();
+                //  loginResponse = new Response(ResponseCode.CODE_FAILED, connection.getResponseMessage());
+            }
+            connection.disconnect();
+        } catch (ProtocolException e) {
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return response;
+    }
+
+    @Override
+    protected void onPostExecute(String s) {
+        System.out.println("this is my response : "+s);
+        try {
+            JSONObject response = new JSONObject(s);
+
+            int statuscode = response.getInt("status");
+            if(statuscode==200){
+                SharedPreferences reservationSettings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                SharedPreferences.Editor reservationSettingsEditor = reservationSettings.edit();
+                reservationSettingsEditor.putString("access_token", ((JSONObject)response.get("data")).getString("token"));
+                reservationSettingsEditor.apply();
+
+
+                Intent homeIntent = new Intent(MainActivity.this,Home.class);
+                startActivity(homeIntent);
+                finish();
+            }else{
+
+                Log.d("status",response.getString("status"));
+                Toast.makeText(getApplicationContext(),response.get("message").toString(), Toast.LENGTH_LONG).show();
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+       // super.onPostExecute(s);
+    }
+}
+
+
+
+
 }
