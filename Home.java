@@ -10,7 +10,6 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -32,6 +31,7 @@ import android.app.DatePickerDialog;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -39,15 +39,9 @@ import android.widget.Toast;
 
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
@@ -55,15 +49,12 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 
-import com.thiman.android.reservationmanager.Fragments.SelectPackageType;
 import com.thiman.android.reservationmanager.Fragments.SelectRoomTypeFragment;
+import com.thiman.android.reservationmanager.JSON.JSONActivity;
 import com.thiman.android.reservationmanager.NavigationBar.AboutUs;
 import com.thiman.android.reservationmanager.NavigationBar.AvailableRooms;
 import com.thiman.android.reservationmanager.NavigationBar.Bookings;
@@ -71,15 +62,19 @@ import com.thiman.android.reservationmanager.NavigationBar.Currency;
 import com.thiman.android.reservationmanager.NavigationBar.Help;
 import com.thiman.android.reservationmanager.NavigationBar.Language;
 import com.thiman.android.reservationmanager.NavigationBar.Promotions;
-import com.thiman.android.reservationmanager.NavigationBar.Reports;
 import com.thiman.android.reservationmanager.NavigationBar.RoomDetails;
-import com.thiman.android.reservationmanager.NavigationBar.Settings;
-import com.thiman.android.reservationmanager.NavigationBar.Share;
-import com.thiman.android.reservationmanager.Util.HttpCall;
+import com.thiman.android.reservationmanager.NavigationBar.Reports;
+import com.thiman.android.reservationmanager.postModel.ConfirmModel;
+import com.thiman.android.reservationmanager.postModel.bookingRespons;
+import com.thiman.android.reservationmanager.postModel.CheckBookingModel;
+import com.thiman.android.reservationmanager.rest.ApiClient;
+import com.thiman.android.reservationmanager.rest.ApiInterface;
 
 import org.json.JSONObject;
 
-import static java.lang.System.out;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class Home extends AppCompatActivity
@@ -89,17 +84,20 @@ public class Home extends AppCompatActivity
     Button checkOut;
     Button search,rincre,rdecre,aincre,adecre,cincre,cdecre;
     DatePickerDialog picker;
-    TextView tvci,tvco,noroom,noadult,nochild,noroom1,noadult1,nochild1,type;
+    TextView tvci,tvco,noroom,noadult,nochild,noroom1,noadult1,nochild1;
+    Spinner rType,pType;
     int room = 1,adult = 1,child = 1;
     Animation fadeIn;
     RelativeLayout rl1;
-    LinearLayout ll2;
+    LinearLayout ll2,home;
     private DrawerLayout drawer;
     private ActionBarDrawerToggle toggle;
     private Toolbar mToolbar;
     String roomCount, adultCount, childrenCount;
-    private CheckBox cb1, cb2, cb3, cb4,cb5,cb6,cb7,cb8,cb9;
+
     Spinner rTypeSpinner,pTypeSpinner;
+
+    String checkInDate, checkOutDate, onOfRoom, onOfchild, onOfAdult, type, roomType, packageType;
 
 
 
@@ -138,7 +136,7 @@ public class Home extends AppCompatActivity
      rTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
          @Override
          public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-             Toast.makeText(Home.this,rSpinner.get(i),Toast.LENGTH_SHORT).show();
+//             Toast.makeText(Home.this,rSpinner.get(i),Toast.LENGTH_SHORT).show();
          }
 
          @Override
@@ -150,7 +148,7 @@ public class Home extends AppCompatActivity
         pTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Toast.makeText(Home.this,pSpinner.get(i),Toast.LENGTH_SHORT).show();
+//                Toast.makeText(Home.this,pSpinner.get(i),Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -164,8 +162,7 @@ public class Home extends AppCompatActivity
 
 
 
-        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mOrderReceiver,
-                new IntentFilter("order"));
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mOrderReceiver, new IntentFilter("order"));
 
 
         noroom = findViewById(R.id.room);
@@ -236,36 +233,121 @@ public class Home extends AppCompatActivity
 
 
 
-//        search.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                cb1 = findViewById(R.id.c1);
-//                cb2 = findViewById(R.id.c2);
-//                cb3 = findViewById(R.id.c3);
-//
-//                cb4 = findViewById(R.id.c4);
-//                cb5 = findViewById(R.id.c5);
-//                cb6 = findViewById(R.id.c6);
-//
-//                cb7 = findViewById(R.id.c7);
-//                cb8 = findViewById(R.id.c8);
-//                cb9 = findViewById(R.id.c9);
-//                String roomType="";
-//                if(cb1.isChecked()){
-//                    roomType=cb1.getText().toString();
-//                }
-//                String noRoom=noroom.toString();
-//                String noAdult=noadult.toString();
-//                String noChild=nochild.toString();
-//              //  cb10 = findViewById(R.id.c10);
-//                MyAsync myAsync= new MyAsync();
-//                myAsync.execute("adminnew","123456");
-//
-//
-//            }
-//        });
+        search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int roomId = 0;
+                int packageId = 0;
+                TextView checkIn = findViewById(R.id.chkin);
+                TextView checkOut = findViewById(R.id.chkout);
+                TextView rooms = findViewById(R.id.room);
+                TextView adults = findViewById(R.id.adult);
+                TextView child = findViewById(R.id.child);
+                Spinner rType = findViewById(R.id.rType);
+                Spinner pType = findViewById(R.id.pType);
+
+                checkInDate = String.valueOf(checkIn.getText());
+                checkOutDate = String.valueOf(checkOut.getText());
+                onOfRoom = String.valueOf(rooms.getText());
+                onOfchild = String.valueOf(child.getText());
+                onOfAdult = String.valueOf(adults.getText());
+                roomType = String.valueOf(rType.getSelectedItem());
+                packageType = String.valueOf(pType.getSelectedItem());
+
+                if (type.equals("room")){
+                    switch (roomType){
+                        case "Single": roomId = 100; break;
+                        case "Double": roomId = 101; break;
+                        case "Double Double": roomId = 102; break;
+                        case "Cabana": roomId = 103; break;
+                        case "Twin": roomId = 104; break;
+                        case "Parlor": roomId = 105; break;
+                    }
+                }
+
+                if (type.equals("package")){
+                    switch (packageType){
+                        case "Normal": packageId = 100; break;
+                        case "Gold": packageId = 101; break;
+                        case "Silver": packageId = 102; break;
+                        case "Platinum": packageId = 103; break;
+                    }
+                }
+
+                final String fRoomId = String.valueOf(roomId);
+                final String fPackageId = String.valueOf(packageId);
+
+                CheckBookingModel checkBookingModel = new CheckBookingModel(roomId, packageId, checkInDate, checkOutDate);
+                ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+                Call<bookingRespons> call = apiInterface.postRoomAvailabilty(checkBookingModel);
+                call.enqueue(new Callback<bookingRespons>() {
+                    @Override
+                    public void onResponse(Call<bookingRespons> call, Response<bookingRespons> response) {
+                        Toast.makeText(getApplicationContext(),String.valueOf(response.message()),Toast.LENGTH_SHORT).show();
+                        if(response.code()==200){
+                            Log.i("Tag ", String.valueOf(response.message()));
+                            Toast.makeText(getApplicationContext(),String.valueOf(response.message()),Toast.LENGTH_SHORT).show();
+                            int room[] = new int[0];
+                            room[0] = response.body().getRoomId().get(1);
+                            ConfirmModel confirmModel = new ConfirmModel(onOfchild, onOfAdult, "reserved", "calling", checkInDate,
+                                    checkOutDate, "100", "932081806v", String.valueOf(fRoomId),room, String.valueOf(fPackageId));
+                            Log.i("Tag ", String.valueOf(response.message()));
+                            post(confirmModel);
+
+                        } else if(response.code()==404){
+
+                            AlertDialog.Builder builder1 = new AlertDialog.Builder(Home.this,AlertDialog.THEME_HOLO_DARK);
+
+                            builder1.setMessage("Want to Search Again?");
+
+                            builder1.setCancelable(false);
+                            builder1.setTitle("No Rooms Available");
+                            builder1.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+
+
+                                }
+                            });
+
+                            AlertDialog dialog = builder1.create();
+                            dialog.show();
+
+                            Toast.makeText(getApplicationContext(),"Room Not Available",Toast.LENGTH_SHORT).show();
+                        }else {
+                            Toast.makeText(getApplicationContext(),"System Error",Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<bookingRespons> call, Throwable t) {
+
+                    }
+                });
+            }
+        });
 
     }
+
+    private void post(ConfirmModel confirmModel){
+        Log.i("Tag ", "jbjdbjbcdljblj");
+        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        Call<ConfirmModel> call = apiInterface.finalPost(confirmModel);
+        call.enqueue(new Callback<ConfirmModel>() {
+            @Override
+            public void onResponse(Call<ConfirmModel> call, Response<ConfirmModel> response) {
+                Log.i("TagAAAAA ", String.valueOf(response.code()));
+                Toast.makeText(getApplicationContext(), String.valueOf(response.code()), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Call<ConfirmModel> call, Throwable t) {
+
+            }
+        });
+    }
+
 
 
 
@@ -273,7 +355,7 @@ public class Home extends AppCompatActivity
     public void onBackPressed() {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
+
         } else {
             super.onBackPressed();
         }
@@ -348,7 +430,7 @@ public class Home extends AppCompatActivity
                 Intent currency = new Intent(Home.this,Currency.class);
                 startActivity(currency);
             } else if (id == R.id.nav_settings) {
-                Intent settings = new Intent(Home.this,Settings.class);
+                Intent settings = new Intent(Home.this,JSONActivity.class);
                 startActivity(settings);
 
             } else if (id == R.id.nav_language) {
@@ -374,7 +456,7 @@ public class Home extends AppCompatActivity
                 startActivity(about);
 
             } else if (id == R.id.nav_share) {
-                Intent share = new Intent(Home.this,Share.class);
+                Intent share = new Intent(Home.this,Reports.class);
                 startActivity(share);
 
         } else if (id == R.id.nav_logout) {
@@ -406,13 +488,13 @@ public class Home extends AppCompatActivity
                     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
 
                         Log.i("check","0");
-                            tvci.setText(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
+                        tvci.setText(year + "-" + (monthOfYear + 1) + "-" + dayOfMonth);
 
                             if((dayOfMonth == 31) && ((monthOfYear+1)==1))
                         tvco.setText("1" + "-" + ((monthOfYear + 1)+1) + "-" + year);
 
 
-                        tvco.setText(dayOfMonth + 1 + "-" + (monthOfYear + 1) + "-" + year);
+                        tvco.setText( year + "-" + (monthOfYear + 1) + "-" + (dayOfMonth + 1));
 
 
                     }
@@ -445,13 +527,14 @@ public class Home extends AppCompatActivity
                 new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(final DatePicker view, final int year, final int monthOfYear, final int dayOfMonth) {
-                        tvco.setText(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
+                        tvco.setText(year + "-" + (monthOfYear + 1) + "-" + dayOfMonth);
 
-
-                        if (tvci.getText().equals(tvco.getText())){
+                            Log.i("alert","AAAAA");
+                        if (tvci.getText().toString().equals(tvco.getText().toString())){
 //                            Toast.makeText(Home.this, "Check CheckOut Date Again...!!!", Toast.LENGTH_SHORT).show();
 //                        }
 //                        else if( ){
+                            Log.i("alert","ZZZZZZ");
 
                             AlertDialog.Builder builder = new AlertDialog.Builder(Home.this,AlertDialog.THEME_HOLO_DARK);
 
@@ -471,7 +554,9 @@ public class Home extends AppCompatActivity
 
 //                                 if(dayOfMonth == 31 && ((monthOfYear == 1)||(monthOfYear == 3)||(monthOfYear == 5)||(monthOfYear == 7)||(monthOfYear == 8)||(monthOfYear == 10)||(monthOfYear == 12))) {
 ////                                        // Do something when click positive button
-                                        tvco.setText(dayOfMonth + 1 + "-" + (monthOfYear + 1) + "-" + year);
+                                        tvco.setText( year + "-" + (monthOfYear + 1) + "-" + (dayOfMonth + 1));
+//                                    tvco.setText(year + "-" + (monthOfYear + 1) + "-" + year);
+
 //
 //                                   }
 
@@ -525,14 +610,28 @@ public class Home extends AppCompatActivity
             nochild.setText(childrenCount);
 
 
-            Toast.makeText(getApplicationContext(), roomCount + " " + adultCount + " " + childrenCount,Toast.LENGTH_LONG).show();
+//            Toast.makeText(getApplicationContext(), roomCount + " " + adultCount + " " + childrenCount,Toast.LENGTH_LONG).show();
         }
     };
 
-      public void check(View view){
-        SelectPackageType selectPackageType = new SelectPackageType();
+    public void onRadioButtonClicked(View view) {
+        // Is the button now checked?
+        boolean checked = ((RadioButton) view).isChecked();
 
-      }
+        // Check which radio button was clicked
+        switch(view.getId()) {
+            case R.id.radio_type:
+                if (checked)
+                    type = "room";
+                    break;
+            case R.id.radio_pack:
+                if (checked)
+                    type = "package";
+                    break;
+        }
+    }
+
+
 
   class MyAsync extends AsyncTask<String,Integer,String>{
 

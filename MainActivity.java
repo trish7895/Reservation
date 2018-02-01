@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
         signIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent signIn = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.lk/"));
+                Intent signIn = new Intent(Intent.ACTION_VIEW, Uri.parse("http://booking.pal.morasquad.me/"));
                 startActivity(signIn);
             }
         });

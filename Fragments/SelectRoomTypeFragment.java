@@ -61,7 +61,7 @@ public class SelectRoomTypeFragment extends DialogFragment {
         btnOk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getContext(), roomCount + " " + adultCount + " " + childrenCount,Toast.LENGTH_LONG).show();
+//                Toast.makeText(getContext(), roomCount + " " + adultCount + " " + childrenCount,Toast.LENGTH_LONG).show();
                 Intent intent = new Intent("order");
                 intent.putExtra("roomCount",roomCount);
                 intent.putExtra("adultCount",adultCount);
