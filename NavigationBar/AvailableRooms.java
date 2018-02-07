@@ -1,11 +1,14 @@
 package com.thiman.android.reservationmanager.NavigationBar;
 
+import android.animation.ValueAnimator;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.animation.LinearInterpolator;
+import android.widget.TextView;
 
 import com.thiman.android.reservationmanager.AvailableDetails.AvailableRoomDetailsModel;
 import com.thiman.android.reservationmanager.AvailableDetails.RecycleViewAvailableAdapter;
@@ -38,6 +41,24 @@ public class AvailableRooms extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
+
+        final TextView first = findViewById(R.id.first);
+        final TextView second = findViewById(R.id.second);
+        final ValueAnimator animator = ValueAnimator.ofFloat(0.0f, 1.0f);
+        animator.setRepeatCount(ValueAnimator.INFINITE);
+        animator.setInterpolator(new LinearInterpolator());
+        animator.setDuration(5000L);
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                final float progress = (float) animation.getAnimatedValue();
+                final float width = first.getWidth();
+                final float translationX = width * progress;
+                first.setTranslationX(translationX);
+//                second.setTranslationX(translationX - width);
+            }
+        });
+        animator.start();
 
         recyclerView = findViewById(R.id.rv_recycler_view_ar);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());

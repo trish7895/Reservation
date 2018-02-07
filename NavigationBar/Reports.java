@@ -8,6 +8,8 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import com.hitomi.cmlibrary.CircleMenu;
 import com.hitomi.cmlibrary.OnMenuSelectedListener;
@@ -35,7 +37,7 @@ import static java.lang.Thread.sleep;
 
 public class Reports extends AppCompatActivity {
 
-    String share[]={"FaceBook","Google","Twitter","Drive","WhatsApp","Messenger"};
+    Animation blink;
     ProgressDialog progressDialog;
 
     @Override
@@ -45,16 +47,16 @@ public class Reports extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
+        blink = AnimationUtils.loadAnimation(this,R.anim.blink);
         CircleMenu circleMenu = findViewById(R.id.cirMenu);
         circleMenu.setMainMenu(Color.parseColor("#ffffff"),R.drawable.combo_chart,R.drawable.combo_chart)
-        .addSubMenu(Color.parseColor("#00ceff"),R.drawable.ic_menu_send)
-                .addSubMenu(Color.parseColor("#00ceff"),R.drawable.ic_menu_camera)
-                .addSubMenu(Color.parseColor("#00ceff"),R.drawable.ic_menu_slideshow)
-                .addSubMenu(Color.parseColor("#00ceff"),R.drawable.ic_menu_gallery)
-                .addSubMenu(Color.parseColor("#00ceff"),R.drawable.ic_menu_share)
-                .addSubMenu(Color.parseColor("#00ceff"),R.drawable.ic_menu_manage)
-        .setOnMenuSelectedListener(new OnMenuSelectedListener() {
+        .addSubMenu(Color.parseColor("#00ceff"),R.drawable.circular_chart)
+                .addSubMenu(Color.parseColor("#00ceff"),R.drawable.barchart1)
+                .addSubMenu(Color.parseColor("#00ceff"),R.drawable.circular_chart)
+                .addSubMenu(Color.parseColor("#00ceff"),R.drawable.barchart1)
+                .addSubMenu(Color.parseColor("#00ceff"),R.drawable.pie_chart)
+                .addSubMenu(Color.parseColor("#00ceff"),R.drawable.bars)
+                .setOnMenuSelectedListener(new OnMenuSelectedListener() {
             @Override
             public void onMenuSelected(int i) {
 

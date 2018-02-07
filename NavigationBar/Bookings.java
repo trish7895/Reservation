@@ -1,5 +1,8 @@
 package com.thiman.android.reservationmanager.NavigationBar;
 
+import android.animation.ValueAnimator;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -13,6 +16,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LinearInterpolator;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -52,19 +60,39 @@ public class Bookings extends AppCompatActivity {
     RecyclerView recyclerView;
     ApiInterface apiInterface;
     RecycleViewBookingAdapter recyclerviewAdapter;
+    Animation blink;
+    ImageView ib;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_booking);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
         //   getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setSupportActionBar(toolbar);
         if(getSupportActionBar() != null){
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
+        blink = AnimationUtils.loadAnimation(this,R.anim.blink);
 
+        final TextView first = findViewById(R.id.first);
+        final TextView second = findViewById(R.id.second);
+        final ValueAnimator animator = ValueAnimator.ofFloat(0.0f, 1.0f);
+        animator.setRepeatCount(ValueAnimator.INFINITE);
+        animator.setInterpolator(new LinearInterpolator());
+        animator.setDuration(5000L);
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                final float progress = (float) animation.getAnimatedValue();
+                final float width = first.getWidth();
+                final float translationX = width * progress;
+                first.setTranslationX(translationX);
+//                second.setTranslationX(translationX - width);
+            }
+        });
+        animator.start();
 
 //        viewPagerBooking = (ViewPager) findViewById(R.id.viewpager);
         recyclerView = findViewById(R.id.rv_recycler_view);
@@ -102,6 +130,24 @@ public class Bookings extends AppCompatActivity {
             public void onFailure(Call<BookingDetailsModel> call, Throwable t) {
 //                Log.i("Tag ", t.getMessage());
 //                Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_SHORT).show();
+
+                AlertDialog.Builder builder1 = new AlertDialog.Builder(Bookings.this,AlertDialog.THEME_HOLO_DARK);
+
+                builder1.setMessage("Try Again?");
+
+                builder1.setCancelable(false);
+                builder1.setTitle("Connection Error ");
+                builder1.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+
+
+                    }
+                });
+
+                AlertDialog dialog = builder1.create();
+                dialog.show();
             }
         });
     }

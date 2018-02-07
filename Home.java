@@ -6,11 +6,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.graphics.drawable.AnimationUtilsCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
@@ -30,8 +32,10 @@ import android.widget.Button;
 import android.app.DatePickerDialog;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -82,22 +86,21 @@ public class Home extends AppCompatActivity
 
     Button checkIn;
     Button checkOut;
-    Button search,rincre,rdecre,aincre,adecre,cincre,cdecre;
+    Button search;
+    EditText eId,nIc;
     DatePickerDialog picker;
-    TextView tvci,tvco,noroom,noadult,nochild,noroom1,noadult1,nochild1;
-    Spinner rType,pType;
+    TextView tvci,tvco,noroom,noadult,nochild;
     int room = 1,adult = 1,child = 1;
-    Animation fadeIn;
+    Animation fadeIn,blink;
     RelativeLayout rl1;
     LinearLayout ll2,home;
     private DrawerLayout drawer;
     private ActionBarDrawerToggle toggle;
     private Toolbar mToolbar;
     String roomCount, adultCount, childrenCount;
-
+    RadioButton radioButtonRT,radioButtonPT;
     Spinner rTypeSpinner,pTypeSpinner;
-
-    String checkInDate, checkOutDate, onOfRoom, onOfchild, onOfAdult, type, roomType, packageType;
+    String checkInDate, checkOutDate, onOfRoom, onOfchild, onOfAdult, type, roomType, packageType,eID,nIC;
 
 
 
@@ -110,52 +113,55 @@ public class Home extends AppCompatActivity
         rTypeSpinner = findViewById(R.id.rType);
         pTypeSpinner = findViewById(R.id.pType);
 
+        radioButtonRT =findViewById(R.id.radio_type);
+        radioButtonPT =findViewById(R.id.radio_pack);
 
-        final List<String> rSpinner= new ArrayList<String>();
-        final List<String> pSpinner= new ArrayList<String>();
-
-        rSpinner.add("Single");
-        rSpinner.add("Double");
-        rSpinner.add("Double Double");
-        rSpinner.add("Cabana");
-        rSpinner.add("Twin");
-        rSpinner.add("Parlor");
-
-        pSpinner.add("Normal");
-        pSpinner.add("Gold");
-        pSpinner.add("Silver");
-        pSpinner.add("Platinum");
-
-        ArrayAdapter spinnerAdapter = new ArrayAdapter(Home.this,R.layout.support_simple_spinner_dropdown_item,rSpinner);
-        ArrayAdapter spinnerAdapterP = new ArrayAdapter(Home.this,R.layout.support_simple_spinner_dropdown_item,pSpinner);
-
-        rTypeSpinner.setAdapter(spinnerAdapter);
-        pTypeSpinner.setAdapter(spinnerAdapterP);
-
-
-     rTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-         @Override
-         public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-//             Toast.makeText(Home.this,rSpinner.get(i),Toast.LENGTH_SHORT).show();
-         }
-
-         @Override
-         public void onNothingSelected(AdapterView<?> adapterView) {
-
-         }
-     });
-
-        pTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-//                Toast.makeText(Home.this,pSpinner.get(i),Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
+//
+//        final List<String> rSpinner= new ArrayList<String>();
+//        final List<String> pSpinner= new ArrayList<String>();
+//
+//        rSpinner.add("Single");
+//        rSpinner.add("Double");
+//        rSpinner.add("Double Double");
+//        rSpinner.add("Cabana");
+//        rSpinner.add("Twin");
+//        rSpinner.add("Parlor");
+//
+//        pSpinner.add("Normal");
+//        pSpinner.add("Gold");
+//        pSpinner.add("Silver");
+//        pSpinner.add("Platinum");
+//
+//        ArrayAdapter spinnerAdapter = new ArrayAdapter(Home.this,R.layout.support_simple_spinner_dropdown_item,rSpinner);
+//        ArrayAdapter spinnerAdapterP = new ArrayAdapter(Home.this,R.layout.support_simple_spinner_dropdown_item,pSpinner);
+//
+//        rTypeSpinner.setAdapter(spinnerAdapter);
+//        pTypeSpinner.setAdapter(spinnerAdapterP);
+//
+//
+//     rTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//         @Override
+//         public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+////             Toast.makeText(Home.this,rSpinner.get(i),Toast.LENGTH_SHORT).show();
+//         }
+//
+//         @Override
+//         public void onNothingSelected(AdapterView<?> adapterView) {
+//
+//         }
+//     });
+//
+//        pTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+////                Toast.makeText(Home.this,pSpinner.get(i),Toast.LENGTH_SHORT).show();
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> adapterView) {
+//
+//            }
+//        });
 
 
 
@@ -177,6 +183,8 @@ public class Home extends AppCompatActivity
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
+//        blink = AnimationUtils.loadAnimation(this,R.anim.blink);
+//        mToolbar.setAnimation(blink);
         fadeIn = AnimationUtils.loadAnimation(this,R.anim.imageanim);
         rl1 = findViewById(R.id.home);
         rl1.setAnimation(fadeIn);
@@ -245,7 +253,8 @@ public class Home extends AppCompatActivity
                 TextView child = findViewById(R.id.child);
                 Spinner rType = findViewById(R.id.rType);
                 Spinner pType = findViewById(R.id.pType);
-
+                EditText eId = findViewById(R.id.eid);
+                EditText nIc = findViewById(R.id.nic);
                 checkInDate = String.valueOf(checkIn.getText());
                 checkOutDate = String.valueOf(checkOut.getText());
                 onOfRoom = String.valueOf(rooms.getText());
@@ -253,82 +262,184 @@ public class Home extends AppCompatActivity
                 onOfAdult = String.valueOf(adults.getText());
                 roomType = String.valueOf(rType.getSelectedItem());
                 packageType = String.valueOf(pType.getSelectedItem());
+                eID = String.valueOf(eId.getText());
+                nIC = String.valueOf(nIc.getText());
 
-                if (type.equals("room")){
-                    switch (roomType){
-                        case "Single": roomId = 100; break;
-                        case "Double": roomId = 101; break;
-                        case "Double Double": roomId = 102; break;
-                        case "Cabana": roomId = 103; break;
-                        case "Twin": roomId = 104; break;
-                        case "Parlor": roomId = 105; break;
-                    }
+                if ((checkInDate.isEmpty()||checkOutDate.isEmpty())){
+
+                    AlertDialog.Builder builder1 = new AlertDialog.Builder(Home.this,AlertDialog.THEME_HOLO_DARK);
+
+                    builder1.setMessage("Want to Search Again?");
+
+                    builder1.setCancelable(false);
+                    builder1.setTitle("Enter Correct Date");
+                    builder1.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+
+
+                        }
+                    });
+
+                    AlertDialog dialog = builder1.create();
+                    dialog.show();
+
+
+                } else if (!(radioButtonPT.isChecked()||radioButtonRT.isChecked())){
+                    AlertDialog.Builder builder1 = new AlertDialog.Builder(Home.this,AlertDialog.THEME_HOLO_DARK);
+
+                    builder1.setMessage("Want to Search Again?");
+
+                    builder1.setCancelable(false);
+                    builder1.setTitle("Select Type");
+                    builder1.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+
+
+                        }
+                    });
+
+                    AlertDialog dialog = builder1.create();
+                    dialog.show();
+                } else if(onOfRoom.isEmpty() || (onOfAdult.isEmpty()&& onOfchild.isEmpty())){
+                    AlertDialog.Builder builder1 = new AlertDialog.Builder(Home.this,AlertDialog.THEME_HOLO_DARK);
+                    builder1.setMessage("Enter Quantity of Persons");
+                    builder1.setCancelable(false);
+                    builder1.setTitle("No selections!!!");
+                    builder1.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    });
+                    AlertDialog dialog = builder1.create();
+                    dialog.show();
+                }else if(eID.isEmpty()||nIC.isEmpty()){
+                    AlertDialog.Builder builder1 = new AlertDialog.Builder(Home.this,AlertDialog.THEME_HOLO_DARK);
+                    builder1.setMessage("Enter EID & NIC ");
+                    builder1.setCancelable(false);
+                    builder1.setTitle("ID's Not Entered");
+                    builder1.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    });
+                    AlertDialog dialog = builder1.create();
+                    dialog.show();
                 }
 
-                if (type.equals("package")){
-                    switch (packageType){
-                        case "Normal": packageId = 100; break;
-                        case "Gold": packageId = 101; break;
-                        case "Silver": packageId = 102; break;
-                        case "Platinum": packageId = 103; break;
+                else {
+
+                    if (type.equals("room")){
+                        switch (roomType){
+                            case "Single": roomId = 100; break;
+                            case "Double": roomId = 101; break;
+                            case "Double Double": roomId = 102; break;
+                            case "Cabana": roomId = 103; break;
+                            case "Twin": roomId = 104; break;
+                            case "Parlor": roomId = 105; break;
+
+                        }
                     }
-                }
 
-                final String fRoomId = String.valueOf(roomId);
-                final String fPackageId = String.valueOf(packageId);
+                    if (type.equals("package")){
+                        switch (packageType){
+                            case "Normal": packageId = 100; break;
+                            case "Gold": packageId = 101; break;
+                            case "Silver": packageId = 102; break;
+                            case "Platinum": packageId = 103; break;
+                        }
+                    }
 
-                CheckBookingModel checkBookingModel = new CheckBookingModel(roomId, packageId, checkInDate, checkOutDate);
-                ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-                Call<bookingRespons> call = apiInterface.postRoomAvailabilty(checkBookingModel);
-                call.enqueue(new Callback<bookingRespons>() {
-                    @Override
-                    public void onResponse(Call<bookingRespons> call, Response<bookingRespons> response) {
-                        Toast.makeText(getApplicationContext(),String.valueOf(response.message()),Toast.LENGTH_SHORT).show();
-                        if(response.code()==200){
-                            Log.i("Tag ", String.valueOf(response.message()));
+                    final String fRoomId = String.valueOf(roomId);
+                    final String fPackageId = String.valueOf(packageId);
+
+                    CheckBookingModel checkBookingModel = new CheckBookingModel(roomId, packageId, checkInDate, checkOutDate);
+                    ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+                    Call<bookingRespons> call = apiInterface.postRoomAvailabilty(checkBookingModel);
+                    call.enqueue(new Callback<bookingRespons>() {
+                        @Override
+                        public void onResponse(Call<bookingRespons> call, Response<bookingRespons> response) {
                             Toast.makeText(getApplicationContext(),String.valueOf(response.message()),Toast.LENGTH_SHORT).show();
-                            int room[] = new int[0];
-                            room[0] = response.body().getRoomId().get(1);
-                            ConfirmModel confirmModel = new ConfirmModel(onOfchild, onOfAdult, "reserved", "calling", checkInDate,
-                                    checkOutDate, "100", "932081806v", String.valueOf(fRoomId),room, String.valueOf(fPackageId));
-                            Log.i("Tag ", String.valueOf(response.message()));
-                            post(confirmModel);
+                            if(response.code()==200){
+//                                Toast.makeText(Home.this,"Room Not Available",Toast.LENGTH_SHORT).show();
+                                System.out.println("this is my response : "+String.valueOf(response.message()));
+                                Log.i("Tag ", String.valueOf(response.message()));
+                                Log.i("Tag ", "AAAAAAA");
+                                Toast.makeText(getApplicationContext(),String.valueOf(response.message()),Toast.LENGTH_SHORT).show();
+                                int room[] = new int[0];
+//                            Toast.makeText(getApplicationContext(),"Room Not Available",Toast.LENGTH_SHORT).show();
+//                            room[0] = response.body().getRoomId().get(1);
+//                            Log.i("Tag ", "BBBBAAAAA");
+                                ConfirmModel confirmModel = new ConfirmModel(onOfchild, onOfAdult, "reserved", "calling", checkInDate,
+                                        checkOutDate, "100", "932081806v", String.valueOf(fRoomId),room, String.valueOf(fPackageId));
+//                            Log.i("Tag ", String.valueOf(response.message()));
+//                            Log.i("Tag ", "BBBBAAAAA");
+//                            Toast.makeText(getApplicationContext(),"Room Not Available",Toast.LENGTH_SHORT).show();
+//                            System.out.println("this is my response : "+response.message());
+//                            System.out.println("this is my response : "+response.body());
+                                post(confirmModel);
 
-                        } else if(response.code()==404){
+                            } else if(response.code()==404){
 
+                                AlertDialog.Builder builder1 = new AlertDialog.Builder(Home.this,AlertDialog.THEME_HOLO_DARK);
+
+                                builder1.setMessage("Want to Search Again?");
+
+                                builder1.setCancelable(false);
+                                builder1.setTitle("No Rooms Available");
+                                builder1.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+
+
+
+                                    }
+                                });
+
+                                AlertDialog dialog = builder1.create();
+                                dialog.show();
+
+                                Toast.makeText(getApplicationContext(),"Room Not Available",Toast.LENGTH_SHORT).show();
+                            }else {
+                                Toast.makeText(getApplicationContext(),"System Error",Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<bookingRespons> call, Throwable t) {
+                            Log.i("Tag ", String.valueOf(t.getMessage()));
+//                            Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
                             AlertDialog.Builder builder1 = new AlertDialog.Builder(Home.this,AlertDialog.THEME_HOLO_DARK);
 
-                            builder1.setMessage("Want to Search Again?");
+                            builder1.setMessage("Confirm Reservation?");
 
                             builder1.setCancelable(false);
-                            builder1.setTitle("No Rooms Available");
+                            builder1.setTitle("Confirm");
                             builder1.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
 
-
+                                    Toast.makeText(getApplicationContext(),"Confirmed", Toast.LENGTH_SHORT).show();
 
                                 }
                             });
 
                             AlertDialog dialog = builder1.create();
                             dialog.show();
-
-                            Toast.makeText(getApplicationContext(),"Room Not Available",Toast.LENGTH_SHORT).show();
-                        }else {
-                            Toast.makeText(getApplicationContext(),"System Error",Toast.LENGTH_SHORT).show();
                         }
-                    }
+                    });
 
-                    @Override
-                    public void onFailure(Call<bookingRespons> call, Throwable t) {
 
-                    }
-                });
+                }
             }
         });
 
     }
+
+
 
     private void post(ConfirmModel confirmModel){
         Log.i("Tag ", "jbjdbjbcdljblj");
@@ -338,7 +449,7 @@ public class Home extends AppCompatActivity
             @Override
             public void onResponse(Call<ConfirmModel> call, Response<ConfirmModel> response) {
                 Log.i("TagAAAAA ", String.valueOf(response.code()));
-                Toast.makeText(getApplicationContext(), String.valueOf(response.code()), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), String.valueOf(response.body()), Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -460,7 +571,13 @@ public class Home extends AppCompatActivity
                 startActivity(share);
 
         } else if (id == R.id.nav_logout) {
+                SharedPreferences reservationSettings=getSharedPreferences("token",MODE_PRIVATE);
+                SharedPreferences.Editor reservationSettingsEditor=reservationSettings.edit();
+                reservationSettingsEditor.clear();
+                reservationSettingsEditor.commit();
 
+                startActivity(new Intent(Home.this,MainActivity.class));
+                finish();   //finish current activity
 
             }
 
@@ -489,12 +606,24 @@ public class Home extends AppCompatActivity
 
                         Log.i("check","0");
                         tvci.setText(year + "-" + (monthOfYear + 1) + "-" + dayOfMonth);
+                        tvco.setText(year + "-" + (monthOfYear + 1)+ "-" + (dayOfMonth+1));
 
-                            if((dayOfMonth == 31) && ((monthOfYear+1)==1))
-                        tvco.setText("1" + "-" + ((monthOfYear + 1)+1) + "-" + year);
+                            if((dayOfMonth == 31) && (((monthOfYear+1)==1)|| ((monthOfYear+1)==3)|| ((monthOfYear+1)==5)|| ((monthOfYear+1)==7)|| ((monthOfYear+1)==8)|| ((monthOfYear+1)==10)|| ((monthOfYear+1)==12))) {
+                                tvco.setText(year + "-" + ((monthOfYear + 1) + 1) + "-" + "1");
+                            }else if (((dayOfMonth == 30) && (((monthOfYear+1)==4)|| ((monthOfYear+1)==6)|| ((monthOfYear+1)==9)|| ((monthOfYear+1)==11))) ) {
+                                tvco.setText(year + "-" + ((monthOfYear + 1) + 1) + "-" + "1");
+                        }else if(monthOfYear==1){
+                                if((dayOfMonth==28) && ((year%4)==0)){
+                                    tvco.setText(year + "-" + (monthOfYear + 1)+ "-" + "29");
+                                }
+                                if (dayOfMonth==29&& ((year%4)==0)){
+                                    tvco.setText(year + "-" + ((monthOfYear + 1) + 1) + "-" + "1");
+                                }
 
-
-                        tvco.setText( year + "-" + (monthOfYear + 1) + "-" + (dayOfMonth + 1));
+                                if (dayOfMonth==28&& (!((year%4)==0))){
+                                    tvco.setText(year + "-" + ((monthOfYear + 1) + 1) + "-" + "1");
+                                }
+                            }
 
 
                     }

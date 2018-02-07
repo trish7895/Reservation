@@ -18,7 +18,7 @@ public class ApiClient {
         ApiClient.context = context;
     }
 
-    public static final String BASE_URL = "http://10.0.2.2:3002/";
+    public static final String BASE_URL = "http://faceit.projects.mrt.ac.lk:3002/";
     public static Retrofit retrofit = null;
 
     public static Retrofit getApiClient() {
@@ -34,7 +34,9 @@ public class ApiClient {
 
                 Request request = original.newBuilder()
                         .header("Content-Type", "application/json")
-                        .header("x-access-token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1hbmFnZXIiLCJpYXQiOjE1MTc0ODUzNjMsImV4cCI6MTUxNzU3MTc2M30.Q5ggLd1XUMtMLdDFDH9Nl8Mg4Y7wulpYUNJ7-24NBVk")
+//                        .header("x-access-token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1hbmFnZXIiLCJpYXQiOjE1MTc0ODUzNjMsImV4cCI6MTUxNzU3MTc2M30.Q5ggLd1XUMtMLdDFDH9Nl8Mg4Y7wulpYUNJ7-24NBVk")
+                        .header("x-access-token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1hbmFnZXIiLCJpYXQiOjE1MTc5ODMzNjgsImV4cCI6MTUxODA2OTc2OH0.OR7cCU28ob2Kntig7m8adtvEG5PPUdgeVngPGl8s6EY")
+
                         .method(original.method(), original.body())
                         .build();
 

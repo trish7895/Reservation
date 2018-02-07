@@ -1,5 +1,8 @@
 package com.thiman.android.reservationmanager;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -39,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
     Button btnLogin;
     EditText edtPhnNo, edtPwd;
     TextView signIn;
+    public static final String MyPREFERENCES = "MyPrefs" ;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +90,47 @@ public class MainActivity extends AppCompatActivity {
                     login.execute(username,password);
                 }
 
+                else if(username.isEmpty()||password.isEmpty()){
+                    AlertDialog.Builder builder1 = new AlertDialog.Builder(MainActivity.this,AlertDialog.THEME_HOLO_DARK);
+
+                    builder1.setMessage("Try Again?");
+
+                    builder1.setCancelable(false);
+                    builder1.setTitle("Enter userName & Password ");
+                    builder1.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+
+
+                        }
+                    });
+
+                    AlertDialog dialog = builder1.create();
+                    dialog.show();
+
+                }
+
+                else {
+                    AlertDialog.Builder builder1 = new AlertDialog.Builder(MainActivity.this,AlertDialog.THEME_HOLO_DARK);
+
+                    builder1.setMessage("Try Again?");
+
+                    builder1.setCancelable(false);
+                    builder1.setTitle("Enter Correct Credentials ");
+                    builder1.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+
+
+                        }
+                    });
+
+                    AlertDialog dialog = builder1.create();
+                    dialog.show();
+                }
+
             }
 
         });
@@ -92,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
         signIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent signIn = new Intent(Intent.ACTION_VIEW, Uri.parse("http://booking.pal.morasquad.me/"));
+                Intent signIn = new Intent(Intent.ACTION_VIEW, Uri.parse("http://quadro.projects.mrt.ac.lk:8000/"));
                 startActivity(signIn);
             }
         });
@@ -101,6 +147,9 @@ public class MainActivity extends AppCompatActivity {
 
 ///asynctask class
 class MyAsync extends AsyncTask<String,Integer,String> {
+
+
+
 
     @Override
     protected void onProgressUpdate(Integer... params) {
@@ -118,7 +167,8 @@ class MyAsync extends AsyncTask<String,Integer,String> {
 
         try{
 
-            URL loginURL = new URL("http://10.0.2.2:3002/login");
+            URL loginURL = new URL("http://faceit.projects.mrt.ac.lk:3002/login");
+//            URL loginURL = new URL("http://10.0.2.2:3002/login");
             HttpURLConnection connection = (HttpURLConnection) loginURL.openConnection();
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Content-Type", "application/json");
@@ -181,7 +231,7 @@ class MyAsync extends AsyncTask<String,Integer,String> {
 
             int statuscode = response.getInt("status");
             if(statuscode==200){
-                SharedPreferences reservationSettings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                SharedPreferences reservationSettings = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
                 SharedPreferences.Editor reservationSettingsEditor = reservationSettings.edit();
                 reservationSettingsEditor.putString("access_token", ((JSONObject)response.get("data")).getString("token"));
                 reservationSettingsEditor.apply();
@@ -190,10 +240,31 @@ class MyAsync extends AsyncTask<String,Integer,String> {
                 Intent homeIntent = new Intent(MainActivity.this,Home.class);
                 startActivity(homeIntent);
                 finish();
-            }else{
+            }else if(statuscode == 500){
 
                 Log.d("status",response.getString("status"));
                 Toast.makeText(getApplicationContext(),response.get("message").toString(), Toast.LENGTH_LONG).show();
+            }
+            else {
+//                Log.d("status",response.getString("status"));
+//                Toast.makeText(getApplicationContext(),response.get("message").toString(), Toast.LENGTH_LONG).show();
+                AlertDialog.Builder builder1 = new AlertDialog.Builder(MainActivity.this,AlertDialog.THEME_HOLO_DARK);
+
+                builder1.setMessage("Login Failed.Try Again?");
+
+                builder1.setCancelable(false);
+                builder1.setTitle("Enter Correct Credentials ");
+                builder1.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+
+
+                    }
+                });
+
+                AlertDialog dialog = builder1.create();
+                dialog.show();
             }
 
         } catch (JSONException e) {
