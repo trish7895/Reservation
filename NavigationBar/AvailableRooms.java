@@ -1,12 +1,15 @@
 package com.thiman.android.reservationmanager.NavigationBar;
 
 import android.animation.ValueAnimator;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.transition.Fade;
+import android.transition.Slide;
 import android.view.animation.LinearInterpolator;
 import android.widget.TextView;
 
@@ -66,11 +69,14 @@ public class AvailableRooms extends AppCompatActivity {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
 
+
         fetchData();
 
 
 
     }
+
+
 
 
     private void fetchData(){

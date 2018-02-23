@@ -14,16 +14,18 @@ import android.view.animation.AnimationUtils;
 import com.hitomi.cmlibrary.CircleMenu;
 import com.hitomi.cmlibrary.OnMenuSelectedListener;
 import com.thiman.android.reservationmanager.R;
+import com.thiman.android.reservationmanager.ReportCharts.ReportBar;
+import com.thiman.android.reservationmanager.ReportCharts.ReportBarBooking;
+import com.thiman.android.reservationmanager.ReportCharts.ReportBarCountry;
+import com.thiman.android.reservationmanager.ReportCharts.ReportPieBooking;
+import com.thiman.android.reservationmanager.ReportCharts.ReportsPie;
 import com.thiman.android.reservationmanager.ReportDetails.ReportModel;
 import com.thiman.android.reservationmanager.ReportDetails.ReportModel2;
-import com.thiman.android.reservationmanager.RoomDetails.RecyclerViewDetailsAdapter;
-import com.thiman.android.reservationmanager.RoomDetails.RoomDetailsModel;
+import com.thiman.android.reservationmanager.ReportDetails.ReportModel3;
 import com.thiman.android.reservationmanager.rest.ApiClient;
 import com.thiman.android.reservationmanager.rest.ApiInterface;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -73,6 +75,13 @@ public class Reports extends AppCompatActivity {
                     fetchBookingData(2);
                 }
 //                Toast.makeText(Reports.this,"Reports Through"+share[i],Toast.LENGTH_SHORT).show();
+
+                if(i == 4){
+                    fetchCountryData(1);
+                }
+                if(i == 5){
+                    fetchCountryData(2);
+                }
             }
         });
     }
@@ -147,6 +156,44 @@ public class Reports extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ReportModel2> call, Throwable t) {
+                progressDialog.dismiss();
+            }
+        });
+    }
+
+    private void fetchCountryData(final int selector){
+        progressDialog = new ProgressDialog(Reports.this);
+        progressDialog.setMessage("Loading...");
+        progressDialog.show();
+        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        Call<ReportModel3> call = apiInterface.getReportCountryData();
+        call.enqueue(new Callback<ReportModel3>() {
+            @Override
+            public void onResponse(Call<ReportModel3> call, Response<ReportModel3> response) {
+                Log.i("Tag ", String.valueOf(response.body().getArray().size()));
+                progressDialog.dismiss();
+                if(response.code()==200){
+                    if(selector == 1){
+                        Intent country = new Intent(Reports.this, ReportsPie.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("Data", (Serializable) response.body().getArray());
+                        country.putExtras(bundle);
+                        startActivity(country);
+                    }
+                    if(selector == 2){
+                        Intent country = new Intent(Reports.this, ReportBarCountry.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("Data", (Serializable) response.body().getArray());
+                        country.putExtras(bundle);
+                        startActivity(country);
+                    }
+                }else {
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ReportModel3> call, Throwable t) {
                 progressDialog.dismiss();
             }
         });

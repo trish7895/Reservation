@@ -1,5 +1,6 @@
 package com.thiman.android.reservationmanager;
 
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -10,10 +11,14 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.graphics.drawable.AnimationUtilsCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.transition.Slide;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -69,6 +74,7 @@ import com.thiman.android.reservationmanager.NavigationBar.Promotions;
 import com.thiman.android.reservationmanager.NavigationBar.RoomDetails;
 import com.thiman.android.reservationmanager.NavigationBar.Reports;
 import com.thiman.android.reservationmanager.postModel.ConfirmModel;
+import com.thiman.android.reservationmanager.postModel.ConfirmResponce;
 import com.thiman.android.reservationmanager.postModel.bookingRespons;
 import com.thiman.android.reservationmanager.postModel.CheckBookingModel;
 import com.thiman.android.reservationmanager.rest.ApiClient;
@@ -76,6 +82,7 @@ import com.thiman.android.reservationmanager.rest.ApiInterface;
 
 import org.json.JSONObject;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -116,52 +123,52 @@ public class Home extends AppCompatActivity
         radioButtonRT =findViewById(R.id.radio_type);
         radioButtonPT =findViewById(R.id.radio_pack);
 
-//
-//        final List<String> rSpinner= new ArrayList<String>();
-//        final List<String> pSpinner= new ArrayList<String>();
-//
-//        rSpinner.add("Single");
-//        rSpinner.add("Double");
-//        rSpinner.add("Double Double");
-//        rSpinner.add("Cabana");
-//        rSpinner.add("Twin");
-//        rSpinner.add("Parlor");
-//
-//        pSpinner.add("Normal");
-//        pSpinner.add("Gold");
-//        pSpinner.add("Silver");
-//        pSpinner.add("Platinum");
-//
-//        ArrayAdapter spinnerAdapter = new ArrayAdapter(Home.this,R.layout.support_simple_spinner_dropdown_item,rSpinner);
-//        ArrayAdapter spinnerAdapterP = new ArrayAdapter(Home.this,R.layout.support_simple_spinner_dropdown_item,pSpinner);
-//
-//        rTypeSpinner.setAdapter(spinnerAdapter);
-//        pTypeSpinner.setAdapter(spinnerAdapterP);
-//
-//
-//     rTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//         @Override
-//         public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-////             Toast.makeText(Home.this,rSpinner.get(i),Toast.LENGTH_SHORT).show();
-//         }
-//
-//         @Override
-//         public void onNothingSelected(AdapterView<?> adapterView) {
-//
-//         }
-//     });
-//
-//        pTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-////                Toast.makeText(Home.this,pSpinner.get(i),Toast.LENGTH_SHORT).show();
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> adapterView) {
-//
-//            }
-//        });
+
+        final List<String> rSpinner= new ArrayList<String>();
+        final List<String> pSpinner= new ArrayList<String>();
+
+        rSpinner.add("Single");
+        rSpinner.add("Double");
+        rSpinner.add("Double Double");
+        rSpinner.add("Cabana");
+        rSpinner.add("Twin");
+        rSpinner.add("Parlor");
+
+        pSpinner.add("Normal");
+        pSpinner.add("Gold");
+        pSpinner.add("Silver");
+        pSpinner.add("Platinum");
+
+        ArrayAdapter spinnerAdapter = new ArrayAdapter(Home.this,R.layout.support_simple_spinner_dropdown_item,rSpinner);
+        ArrayAdapter spinnerAdapterP = new ArrayAdapter(Home.this,R.layout.support_simple_spinner_dropdown_item,pSpinner);
+
+        rTypeSpinner.setAdapter(spinnerAdapter);
+        pTypeSpinner.setAdapter(spinnerAdapterP);
+
+
+     rTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+         @Override
+         public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+//             Toast.makeText(Home.this,rSpinner.get(i),Toast.LENGTH_SHORT).show();
+         }
+
+         @Override
+         public void onNothingSelected(AdapterView<?> adapterView) {
+
+         }
+     });
+
+        pTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+//                Toast.makeText(Home.this,pSpinner.get(i),Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
 
 
@@ -246,6 +253,8 @@ public class Home extends AppCompatActivity
             public void onClick(View view) {
                 int roomId = 0;
                 int packageId = 0;
+                String StringRoomId = null;
+                String StringPackageId = null;
                 TextView checkIn = findViewById(R.id.chkin);
                 TextView checkOut = findViewById(R.id.chkout);
                 TextView rooms = findViewById(R.id.room);
@@ -340,8 +349,8 @@ public class Home extends AppCompatActivity
                             case "Cabana": roomId = 103; break;
                             case "Twin": roomId = 104; break;
                             case "Parlor": roomId = 105; break;
-
                         }
+                        StringRoomId = String.valueOf(roomId);
                     }
 
                     if (type.equals("package")){
@@ -351,10 +360,11 @@ public class Home extends AppCompatActivity
                             case "Silver": packageId = 102; break;
                             case "Platinum": packageId = 103; break;
                         }
+                        StringPackageId = String.valueOf(packageId);
                     }
 
-                    final String fRoomId = String.valueOf(roomId);
-                    final String fPackageId = String.valueOf(packageId);
+                    final String fRoomId = StringRoomId;
+                    final String fPackageId = StringPackageId;
 
                     CheckBookingModel checkBookingModel = new CheckBookingModel(roomId, packageId, checkInDate, checkOutDate);
                     ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
@@ -362,24 +372,34 @@ public class Home extends AppCompatActivity
                     call.enqueue(new Callback<bookingRespons>() {
                         @Override
                         public void onResponse(Call<bookingRespons> call, Response<bookingRespons> response) {
-                            Toast.makeText(getApplicationContext(),String.valueOf(response.message()),Toast.LENGTH_SHORT).show();
+                           // Toast.makeText(getApplicationContext(),String.valueOf(response.code()),Toast.LENGTH_SHORT).show();
                             if(response.code()==200){
 //                                Toast.makeText(Home.this,"Room Not Available",Toast.LENGTH_SHORT).show();
-                                System.out.println("this is my response : "+String.valueOf(response.message()));
-                                Log.i("Tag ", String.valueOf(response.message()));
-                                Log.i("Tag ", "AAAAAAA");
-                                Toast.makeText(getApplicationContext(),String.valueOf(response.message()),Toast.LENGTH_SHORT).show();
-                                int room[] = new int[0];
+//                                Toast.makeText(getApplicationContext(),String.valueOf(response.message()),Toast.LENGTH_SHORT).show();
+                                ArrayList<Integer> room = new ArrayList<Integer>();
+                                Integer rm = response.body().getRoomId().get(0).getRoomID();
+                                room.add(rm);
 //                            Toast.makeText(getApplicationContext(),"Room Not Available",Toast.LENGTH_SHORT).show();
 //                            room[0] = response.body().getRoomId().get(1);
 //                            Log.i("Tag ", "BBBBAAAAA");
-                                ConfirmModel confirmModel = new ConfirmModel(onOfchild, onOfAdult, "reserved", "calling", checkInDate,
-                                        checkOutDate, "100", "932081806v", String.valueOf(fRoomId),room, String.valueOf(fPackageId));
+                                ConfirmModel confirmModel;
+                                if(type.equals("room")){
+                                    confirmModel = new ConfirmModel(onOfchild, onOfAdult, "reserved", "calling", checkInDate,
+                                            checkOutDate,  eID, nIC, String.valueOf(fRoomId), room, null);
+                                }else {
+                                    confirmModel = new ConfirmModel(onOfchild, onOfAdult, "reserved", "calling", checkInDate,
+                                            checkOutDate, eID, nIC, null, room, String.valueOf(fPackageId));
+                                }
+                                //ConfirmModel confirmModel = new ConfirmModel(onOfchild, onOfAdult, "hdd", "calling", checkInDate,
+                                  //      checkOutDate, "100", "932081806v", String.valueOf(fRoomId), room, null);  //String.valueOf(fPackageId)
 //                            Log.i("Tag ", String.valueOf(response.message()));
 //                            Log.i("Tag ", "BBBBAAAAA");
 //                            Toast.makeText(getApplicationContext(),"Room Not Available",Toast.LENGTH_SHORT).show();
 //                            System.out.println("this is my response : "+response.message());
 //                            System.out.println("this is my response : "+response.body());
+                                //SystemClock.sleep(3000);
+                                Log.i("Tag ", String.valueOf(response.body().getRoomId().get(0).getRoomID()));
+
                                 post(confirmModel);
 
                             } else if(response.code()==404){
@@ -403,32 +423,52 @@ public class Home extends AppCompatActivity
                                 dialog.show();
 
                                 Toast.makeText(getApplicationContext(),"Room Not Available",Toast.LENGTH_SHORT).show();
-                            }else {
-                                Toast.makeText(getApplicationContext(),"System Error",Toast.LENGTH_SHORT).show();
+                            }else if ((response.code()!=404) && (response.code()!=200)){
+
+                                AlertDialog.Builder builder1 = new AlertDialog.Builder(Home.this,AlertDialog.THEME_HOLO_DARK);
+
+                                builder1.setMessage("Want to Search Again?");
+
+                                builder1.setCancelable(false);
+                                builder1.setTitle("No Rooms Available");
+                                builder1.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+
+
+
+                                    }
+                                });
+
+                                AlertDialog dialog = builder1.create();
+                                dialog.show();
+//                                Toast.makeText(getApplicationContext(),String.valueOf(response.code()),Toast.LENGTH_SHORT).show();
+//                                Toast.makeText(getApplicationContext(),String.valueOf(response.message()),Toast.LENGTH_LONG).show();
+//                              Toast.makeText(getApplicationContext(),"No Content",Toast.LENGTH_SHORT).show();
                             }
                         }
 
                         @Override
                         public void onFailure(Call<bookingRespons> call, Throwable t) {
-                            Log.i("Tag ", String.valueOf(t.getMessage()));
-//                            Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
-                            AlertDialog.Builder builder1 = new AlertDialog.Builder(Home.this,AlertDialog.THEME_HOLO_DARK);
-
-                            builder1.setMessage("Confirm Reservation?");
-
-                            builder1.setCancelable(false);
-                            builder1.setTitle("Confirm");
-                            builder1.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-
-                                    Toast.makeText(getApplicationContext(),"Confirmed", Toast.LENGTH_SHORT).show();
-
-                                }
-                            });
-
-                            AlertDialog dialog = builder1.create();
-                            dialog.show();
+                            Log.i("Tag Throwable", String.valueOf(t.getMessage()));
+                            Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+//                            AlertDialog.Builder builder1 = new AlertDialog.Builder(Home.this,AlertDialog.THEME_HOLO_DARK);
+//
+//                            builder1.setMessage("Confirm Reservation?");
+//
+//                            builder1.setCancelable(false);
+//                            builder1.setTitle("Confirm");
+//                            builder1.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+//                                @Override
+//                                public void onClick(DialogInterface dialog, int which) {
+//
+//                                    Toast.makeText(getApplicationContext(),"Confirmed", Toast.LENGTH_SHORT).show();
+//
+//                                }
+//                            });
+//
+//                            AlertDialog dialog = builder1.create();
+//                            dialog.show();
                         }
                     });
 
@@ -442,18 +482,45 @@ public class Home extends AppCompatActivity
 
 
     private void post(ConfirmModel confirmModel){
+        Log.i("Tag ", confirmModel.getNoOfChildren());
+        Log.i("Tag ", confirmModel.getNoOfAdults());
+        Log.i("Tag ", confirmModel.getCheckInDate());
+        Log.i("Tag ", confirmModel.getCheckOutDate());
+//        Log.i("Tag ", confirmModel.getRoomTypeID());
+//        Log.i("Tag ", confirmModel.getPackageID());
+        Log.i("Tag ", String.valueOf(confirmModel.getRoom()));
+        Log.i("Tag1 ", "" + confirmModel.getRoom().get(0));
         Log.i("Tag ", "jbjdbjbcdljblj");
         ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        Call<ConfirmModel> call = apiInterface.finalPost(confirmModel);
-        call.enqueue(new Callback<ConfirmModel>() {
+        Call<ResponseBody> call = apiInterface.finalPost(confirmModel);
+        call.enqueue(new Callback<ResponseBody>() {
             @Override
-            public void onResponse(Call<ConfirmModel> call, Response<ConfirmModel> response) {
-                Log.i("TagAAAAA ", String.valueOf(response.code()));
-                Toast.makeText(getApplicationContext(), String.valueOf(response.body()), Toast.LENGTH_SHORT).show();
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+               Log.i("TagAAAAA ", String.valueOf(response.code()) + call.request());
+                Log.i( "TAGbody ", String.valueOf(response.body()) + call.request());
+//                Toast.makeText(getApplicationContext(), String.valueOf(response.code()) + call.request(), Toast.LENGTH_SHORT).show();
+
+                                            AlertDialog.Builder builder1 = new AlertDialog.Builder(Home.this,AlertDialog.THEME_HOLO_DARK);
+
+                            builder1.setMessage("Confirm Reservation?");
+
+                            builder1.setCancelable(false);
+                            builder1.setTitle("Confirm");
+                            builder1.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                   Toast.makeText(getApplicationContext(),"Confirmed", Toast.LENGTH_SHORT).show();
+
+                                }
+                            });
+
+                            AlertDialog dialog = builder1.create();
+                            dialog.show();
             }
 
             @Override
-            public void onFailure(Call<ConfirmModel> call, Throwable t) {
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
 
             }
         });

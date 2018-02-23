@@ -9,6 +9,7 @@ import java.io.IOException;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -27,6 +28,10 @@ public class ApiClient {
 //        final String accessToken=reservationSettings.getString("access_token","token is empty");
 
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+
         httpClient.addInterceptor(new Interceptor() {
             @Override
             public okhttp3.Response intercept(Chain chain) throws IOException {
@@ -35,7 +40,7 @@ public class ApiClient {
                 Request request = original.newBuilder()
                         .header("Content-Type", "application/json")
 //                        .header("x-access-token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1hbmFnZXIiLCJpYXQiOjE1MTc0ODUzNjMsImV4cCI6MTUxNzU3MTc2M30.Q5ggLd1XUMtMLdDFDH9Nl8Mg4Y7wulpYUNJ7-24NBVk")
-                        .header("x-access-token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1hbmFnZXIiLCJpYXQiOjE1MTc5ODMzNjgsImV4cCI6MTUxODA2OTc2OH0.OR7cCU28ob2Kntig7m8adtvEG5PPUdgeVngPGl8s6EY")
+                        .header("x-access-token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1hbmFnZXIiLCJpYXQiOjE1MTkzNjY3ODIsImV4cCI6MTUxOTQ1MzE4Mn0._FOD8O-UL4SrAv6EGz5_7DNZWVRYYChY00G1w_7-cGo")
 
                         .method(original.method(), original.body())
                         .build();
@@ -43,7 +48,7 @@ public class ApiClient {
                 return chain.proceed(request);
             }
         });
-
+        httpClient.addInterceptor(interceptor);
         OkHttpClient client = httpClient.build();
 
         if (retrofit == null) {
